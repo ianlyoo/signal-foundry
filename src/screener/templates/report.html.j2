@@ -7,21 +7,47 @@
     :root {
       --font-korean-sans: "Noto Sans CJK KR Embedded", "Noto Sans CJK KR", "Source Han Sans K", sans-serif;
       --font-korean-serif: "Noto Sans CJK KR Embedded", "Noto Sans CJK KR", "Source Han Sans K", sans-serif;
-      --paper: #f4efe6;
+      --paper: #e9dfd1;
       --sheet: #fffdf8;
-      --ink: #1c2430;
-      --muted: #64707f;
-      --line: #d8cdbb;
-      --line-strong: #bca987;
-      --panel: #f8f2e8;
-      --accent: #b65c27;
-      --accent-soft: #ead8c6;
-      --safe: #285f4a;
-      --risk: #9a4b30;
-      --positive: #2f6b4f;
-      --negative: #8b3b2a;
-      --neutral: #8a744f;
-      --shadow: rgba(28, 36, 48, 0.08);
+      --sheet-strong: #f9f2e8;
+      --panel: #f3e8d8;
+      --panel-strong: #e6d5bd;
+      --panel-soft: #faf5ee;
+      --ink: #18222f;
+      --muted: #5f6d7c;
+      --muted-soft: #7f8a97;
+      --line: #d5c4aa;
+      --line-strong: #ab8453;
+      --accent: #9f4f1f;
+      --accent-soft: #dcc2a5;
+      --accent-wash: #f2e3d3;
+      --safe: #2c6552;
+      --safe-soft: #deece5;
+      --risk: #9a4f3b;
+      --risk-soft: #efddd7;
+      --neutral: #7b694b;
+      --neutral-soft: #ece2d1;
+      --inverse: #fff9f1;
+      --shadow: rgba(24, 34, 47, 0.08);
+      --hero-glow: rgba(171, 132, 83, 0.1);
+      --page-mist: rgba(249, 242, 232, 0.84);
+      --space-1: 2mm;
+      --space-2: 3.2mm;
+      --space-3: 4.4mm;
+      --space-4: 5.8mm;
+      --space-5: 7.4mm;
+      --radius-sm: 2.1mm;
+      --radius-md: 3mm;
+      --radius-lg: 4.2mm;
+      --border-thin: 0.35mm;
+      --page-height: 275mm;
+      --type-micro: 6.6px;
+      --type-caption: 7.5px;
+      --type-body: 8.7px;
+      --type-copy: 9.4px;
+      --type-lead: 10.4px;
+      --type-title: 13.8px;
+      --type-display: 29px;
     }
 
     @font-face {
@@ -50,629 +76,1568 @@
     }
 
     body {
-      margin: 0;
       background: var(--paper);
       color: var(--ink);
       font-family: var(--font-korean-serif);
-      font-size: 10px;
-      line-height: 1.38;
-    }
-
-    .report-page {
-      break-before: page;
-      page-break-before: always;
-      padding: 0;
-    }
-
-    .report-page:first-of-type {
-      break-before: auto;
-      page-break-before: auto;
-    }
-
-    .report-block {
-      background: var(--sheet);
-      border: 1px solid var(--line);
-      box-shadow: 0 10px 22px var(--shadow);
-      margin-bottom: 7px;
-      padding: 8.5mm;
-    }
-
-    .report-block.compact {
-      padding-bottom: 7mm;
-      padding-top: 7mm;
-    }
-
-    .eyebrow,
-    .meta-label,
-    .panel-kicker,
-    .mini-label,
-    .evidence-meta,
-    .footer-note {
-      font-family: var(--font-korean-sans);
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-    }
-
-    .eyebrow {
-      color: var(--accent);
-      font-size: 8px;
-      margin-bottom: 4px;
-    }
-
-    .header {
-      border-bottom: 2px solid var(--line-strong);
-      break-inside: avoid;
-      margin-bottom: 8px;
-      page-break-inside: avoid;
-      padding-bottom: 8px;
-    }
-
-    .header-main,
-    .metrics-strip,
-    .dual-column,
-    .evidence-grid {
-      font-size: 0;
-    }
-
-    .title-block,
-    .score-block,
-    .metric-card,
-    .column,
-    .evidence-card {
-      display: inline-block;
-      font-size: 10px;
-      vertical-align: top;
-    }
-
-    .title-block {
-      padding-right: 10px;
-      width: 66%;
-    }
-
-    .score-block {
-      width: 34%;
-    }
-
-    .rank-chip {
-      background: var(--ink);
-      border-radius: 999px;
-      color: #fff;
-      display: inline-block;
-      font-family: var(--font-korean-sans);
-      font-size: 9px;
-      letter-spacing: 0.1em;
-      margin-bottom: 8px;
-      padding: 4px 10px;
-      text-transform: uppercase;
+      font-size: var(--type-body);
+      line-height: 1.35;
+      margin: 0;
     }
 
     h1,
     h2,
     h3,
-    p {
+    p,
+    ul,
+    ol,
+    table {
       margin: 0;
     }
 
+    .report-block {
+      margin: 0 auto var(--space-2);
+      width: 100%;
+    }
+
+    .report-page {
+      background:
+        radial-gradient(circle at top right, var(--hero-glow), transparent 26%),
+        linear-gradient(180deg, var(--page-mist), transparent 22%),
+        var(--sheet);
+      border: var(--border-thin) solid var(--line);
+      box-shadow: 0 10px 26px var(--shadow);
+      height: var(--page-height);
+      margin: 0 auto 2mm;
+      overflow: hidden;
+      padding: var(--space-4);
+      position: relative;
+    }
+
+    .report-page:before {
+      background: linear-gradient(90deg, var(--accent), var(--line-strong), transparent);
+      content: "";
+      height: 0.35mm;
+      left: var(--space-4);
+      position: absolute;
+      right: var(--space-4);
+      top: 13.5mm;
+    }
+
+    .report-page--data {
+      break-after: page;
+      page-break-after: always;
+    }
+
+    .report-page--commentary {
+      break-after: page;
+      break-before: page;
+      page-break-after: always;
+      page-break-before: always;
+    }
+
+    .report-block:last-child .report-page--commentary {
+      break-after: auto;
+      margin-bottom: 0;
+      page-break-after: auto;
+    }
+
+    .page-shell {
+      height: 100%;
+      padding-bottom: 19mm;
+      position: relative;
+    }
+
+    .page-top,
+    .hero-table,
+    .data-grid,
+    .commentary-grid,
+    .analysis-grid,
+    .score-row-head,
+    .signal-row-head,
+    .detail-line,
+    .footer-grid,
+    .ledger-line {
+      display: table;
+      table-layout: fixed;
+      width: 100%;
+    }
+
+    .page-top-left,
+    .page-top-right,
+    .hero-main,
+    .hero-side,
+    .data-main,
+    .data-side,
+    .commentary-main,
+    .commentary-side,
+    .analysis-main,
+    .analysis-side,
+    .score-name,
+    .score-value,
+    .signal-label,
+    .signal-value,
+    .detail-key,
+    .detail-value,
+    .footer-left,
+    .footer-right,
+    .ledger-id,
+    .ledger-value {
+      display: table-cell;
+      vertical-align: top;
+    }
+
+    .eyebrow,
+    .section-kicker,
+    .mini-label,
+    .meta-label,
+    .summary-label,
+    .card-label,
+    .detail-key,
+    .evidence-meta,
+    .footer-note,
+    .table-group,
+    .signal-label,
+    .ledger-id,
+    .chip,
+    .rank-chip,
+    .page-chip {
+      font-family: var(--font-korean-sans);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .page-top-left {
+      width: 68%;
+    }
+
+    .page-top-right {
+      text-align: right;
+      width: 32%;
+    }
+
+    .rank-chip,
+    .page-chip,
+    .chip {
+      border-radius: 999px;
+      display: inline-block;
+      font-size: var(--type-micro);
+      padding: 3px 8px;
+    }
+
+    .rank-chip {
+      background: var(--ink);
+      color: var(--inverse);
+      margin-right: 5px;
+    }
+
+    .page-chip {
+      background: var(--accent-wash);
+      border: var(--border-thin) solid var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .eyebrow,
+    .section-kicker,
+    .meta-label,
+    .summary-label,
+    .card-label,
+    .evidence-meta,
+    .footer-note,
+    .table-group,
+    .signal-label,
+    .detail-key,
+    .ledger-id {
+      color: var(--muted);
+      font-size: var(--type-micro);
+    }
+
+    .eyebrow {
+      margin-bottom: 8px;
+    }
+
+    .hero-band,
+    .analysis-band,
+    .section-shell,
+    .score-panel,
+    .summary-card,
+    .spotlight-card,
+    .evidence-card,
+    .detail-card,
+    .memo-card,
+    .note-card {
+      border: var(--border-thin) solid var(--line);
+      border-radius: var(--radius-sm);
+    }
+
+    .hero-band,
+    .analysis-band {
+      background: linear-gradient(135deg, var(--sheet-strong), var(--panel));
+      padding: 7mm 7mm 5.8mm;
+      position: relative;
+    }
+
+    .hero-band:after,
+    .analysis-band:after {
+      background: linear-gradient(180deg, transparent, rgba(171, 132, 83, 0.05));
+      content: "";
+      inset: 0;
+      position: absolute;
+    }
+
+    .hero-main,
+    .analysis-main {
+      padding-right: var(--space-4);
+      width: 63%;
+    }
+
+    .hero-side,
+    .analysis-side {
+      position: relative;
+      width: 37%;
+      z-index: 1;
+    }
+
+    .hero-copy,
+    .body-copy,
+    .support-copy,
+    .evidence-value,
+    .bullet-list li {
+      orphans: 3;
+      widows: 3;
+    }
+
     h1 {
-      font-size: 24px;
-      line-height: 1;
-      margin-bottom: 4px;
+      font-size: var(--type-display);
+      letter-spacing: -0.035em;
+      line-height: 0.96;
+      margin-top: 10px;
+    }
+
+    h2 {
+      font-size: var(--type-title);
+      letter-spacing: -0.02em;
+      line-height: 1.08;
+    }
+
+    h3 {
+      font-size: 9.5px;
+      line-height: 1.15;
     }
 
     .company-name {
       color: var(--muted);
       display: block;
-      font-size: 13px;
-      font-style: italic;
+      font-size: 11.5px;
       margin-top: 4px;
     }
 
-    .lede {
-      color: var(--ink);
-      font-size: 11px;
-      margin-top: 8px;
+    .hero-copy {
+      font-size: var(--type-lead);
+      line-height: 1.45;
+      margin-top: 7px;
+      max-width: 74ch;
+      position: relative;
+      z-index: 1;
     }
 
-    .header-meta {
-      margin-top: 8px;
+    .meta-grid,
+    .summary-strip,
+    .spotlight-grid,
+    .chip-row {
+      font-size: 0;
     }
 
     .meta-item {
-      border-left: 3px solid var(--accent-soft);
+      border-left: 2px solid var(--accent-soft);
       display: inline-block;
-      margin: 0 10px 6px 0;
-      padding: 0 0 0 8px;
+      font-size: var(--type-body);
+      margin: 9px 1.5% 0 0;
+      min-height: 12mm;
+      padding-left: 7px;
       vertical-align: top;
+      width: 49.2%;
     }
 
-    .meta-label {
+    .meta-item:nth-child(2n) {
+      margin-right: 0;
+    }
+
+    .meta-value,
+    .detail-value,
+    .footer-copy,
+    .table-note,
+    .summary-note,
+    .card-note,
+    .score-subtitle,
+    .signal-note,
+    .support-copy,
+    .body-copy {
       color: var(--muted);
-      font-size: 7px;
-      margin-bottom: 2px;
     }
 
     .meta-value {
-      font-size: 10px;
+      font-size: var(--type-body);
     }
 
-    .score-shell {
-      background: linear-gradient(180deg, var(--panel), #f2e7d8);
-      border: 1px solid var(--line-strong);
-      padding: 10px;
+    .score-panel,
+    .memo-card,
+    .section-shell,
+    .summary-card,
+    .spotlight-card,
+    .detail-card,
+    .evidence-card,
+    .note-card {
+      background: var(--panel-soft);
+    }
+
+    .score-panel {
+      background: linear-gradient(180deg, var(--panel), var(--panel-strong));
+      min-height: 54mm;
+      padding: 11px 12px 10px;
     }
 
     .score-title {
       color: var(--muted);
       font-family: var(--font-korean-sans);
-      font-size: 8px;
-      letter-spacing: 0.12em;
+      font-size: var(--type-micro);
+      letter-spacing: 0.14em;
       text-transform: uppercase;
     }
 
     .score-number {
-      color: var(--ink);
-      font-size: 34px;
-      line-height: 0.95;
-      margin: 6px 0 4px;
+      font-size: 38px;
+      line-height: 0.88;
+      margin: 7px 0 5px;
     }
 
     .score-subtitle {
-      color: var(--muted);
-      font-size: 9px;
+      font-size: var(--type-caption);
+      line-height: 1.38;
       margin-bottom: 8px;
     }
 
-    .score-row {
-      margin-top: 7px;
+    .score-row + .score-row {
+      margin-top: 6px;
     }
 
-    .score-row-head {
-      margin-bottom: 3px;
+    .signal-row + .signal-row {
+      margin-top: 0;
     }
 
-    .score-name {
+    .score-name,
+    .signal-label {
       color: var(--ink);
-      display: inline-block;
-      font-family: var(--font-korean-sans);
-      font-size: 8px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      width: 66%;
+      width: 70%;
     }
 
-    .score-value {
+    .score-value,
+    .signal-value {
       color: var(--muted);
-      display: inline-block;
-      font-size: 8px;
       text-align: right;
-      width: 34%;
+      width: 30%;
     }
 
-    .score-track {
-      background: #e4d8c7;
-      height: 7px;
+    .score-track,
+    .signal-track,
+    .mini-track {
+      background: var(--accent-wash);
+      border-radius: 999px;
+      height: 6px;
+      margin-top: 3px;
       overflow: hidden;
     }
 
-    .score-fill {
+    .score-fill,
+    .signal-fill,
+    .mini-fill {
       background: var(--accent);
       height: 100%;
     }
 
-    .score-fill.safe {
+    .score-fill.safe,
+    .signal-fill.safe,
+    .mini-fill.safe {
       background: var(--safe);
     }
 
-    .score-fill.risk {
+    .score-fill.risk,
+    .signal-fill.risk,
+    .mini-fill.risk {
       background: var(--risk);
     }
 
-    .score-fill.neutral {
+    .score-fill.neutral,
+    .signal-fill.neutral,
+    .mini-fill.neutral {
       background: var(--neutral);
     }
 
-    .metrics-strip {
-      break-inside: avoid;
+    .summary-strip {
+      margin-top: var(--space-3);
+    }
+
+    .report-page--data .summary-strip {
+      margin-top: var(--space-2);
+    }
+
+    .summary-card {
+      display: inline-block;
+      min-height: 19mm;
+      padding: 9px 10px 8px;
+      vertical-align: top;
+      width: 24.2%;
+    }
+
+    .report-page--data .summary-card {
+      min-height: 17mm;
+      padding: 8px 10px 7px;
+    }
+
+    .summary-card + .summary-card {
+      margin-left: 1%;
+    }
+
+    .summary-value {
+      font-size: 15px;
+      line-height: 1;
+      margin: 4px 0 3px;
+    }
+
+    .summary-note,
+    .card-note,
+    .table-note,
+    .signal-note,
+    .footer-copy,
+    .support-copy {
+      font-size: var(--type-caption);
+      line-height: 1.35;
+    }
+
+    .page-body {
+      margin-top: var(--space-3);
+    }
+
+    .report-page--data .page-body {
+      margin-top: var(--space-2);
+    }
+
+    .data-main {
+      padding-right: var(--space-3);
+      width: 65.5%;
+    }
+
+    .data-side {
+      width: 34.5%;
+    }
+
+    .commentary-main {
+      padding-right: 3.6mm;
+      width: 60.5%;
+    }
+
+    .commentary-side {
+      width: 39.5%;
+    }
+
+    .section-shell,
+    .memo-card,
+    .note-card {
+      padding: 10px 11px;
+    }
+
+    .section-shell + .section-shell,
+    .memo-card + .memo-card,
+    .note-card + .section-shell,
+    .section-shell + .memo-card,
+    .section-shell + .note-card {
+      margin-top: var(--space-2);
+    }
+
+    .section-header {
+      border-bottom: var(--border-thin) solid var(--line);
       margin-bottom: 8px;
-      page-break-inside: avoid;
+      padding-bottom: 6px;
     }
 
-    .metric-card {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      margin: 0 1% 6px 0;
-      min-height: 56px;
-      padding: 7px 8px;
-      width: 24.25%;
+    .spotlight-card {
+      display: inline-block;
+      margin: 0 1.1% 1.1% 0;
+      min-height: 18mm;
+      padding: 8px 9px;
+      position: relative;
+      vertical-align: top;
+      width: 32.55%;
     }
 
-    .metric-card:nth-child(4n) {
+    .spotlight-card:nth-child(3n) {
       margin-right: 0;
     }
 
-    .mini-label {
-      color: var(--muted);
-      font-size: 7px;
-      margin-bottom: 4px;
+    .spotlight-card:before {
+      background: linear-gradient(90deg, var(--accent), transparent);
+      content: "";
+      height: 1px;
+      left: 9px;
+      position: absolute;
+      right: 9px;
+      top: 9px;
     }
 
-    .metric-value {
-      font-size: 16px;
+    .card-value {
+      font-size: 15px;
       line-height: 1;
-      margin-bottom: 4px;
+      margin: 10px 0 4px;
     }
 
-    .metric-note {
+    .card-note {
+      min-height: 2.7em;
+    }
+
+    .metric-table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    .metric-table th,
+    .metric-table td {
+      border-bottom: var(--border-thin) solid var(--line);
+      font-size: 8.2px;
+      line-height: 1.18;
+      padding: 5px 3px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .report-page--data .metric-table th,
+    .report-page--data .metric-table td {
+      padding: 4px 3px;
+    }
+
+    .metric-table td.label {
       color: var(--muted);
-      font-size: 8px;
+      width: 24%;
     }
 
-    .column {
-      width: 49%;
-    }
-
-    .column + .column {
-      margin-left: 2%;
-    }
-
-    .panel {
-      border-top: 2px solid var(--line-strong);
-      margin-bottom: 8px;
-      padding-top: 5px;
-    }
-
-    .panel-kicker {
-      color: var(--accent);
-      font-size: 7px;
-      margin-bottom: 2px;
-    }
-
-    h2 {
-      font-size: 13px;
-      margin-bottom: 4px;
-    }
-
-    .analysis-copy,
-    .support-copy {
-      margin-bottom: 5px;
-    }
-
-    ul {
-      margin: 0;
-      padding-left: 16px;
-    }
-
-    li {
-      margin-bottom: 4px;
-    }
-
-    .badge-row {
-      margin-top: 5px;
-    }
-
-    .badge {
-      background: var(--accent-soft);
-      border: 1px solid var(--line);
+    .metric-table td.value {
       color: var(--ink);
-      display: inline-block;
       font-family: var(--font-korean-sans);
-      font-size: 7px;
-      letter-spacing: 0.08em;
-      margin: 0 4px 4px 0;
-      padding: 3px 6px;
-      text-transform: uppercase;
+      text-align: right;
+      white-space: nowrap;
+      width: 26%;
     }
 
-    .badge.safe {
-      background: #e1eee8;
-      border-color: #b7d0c5;
-      color: var(--safe);
+    .metric-table tr:last-child td {
+      border-bottom: 0;
     }
 
-    .badge.risk {
-      background: #f2dfd7;
-      border-color: #e0b8a9;
-      color: var(--risk);
+    .table-group th {
+      border-bottom: var(--border-thin) solid var(--line-strong);
+      color: var(--accent);
+      padding-top: 7px;
     }
 
-    .badge.alert {
-      background: #f5dfd7;
-      border-color: #e4baa8;
-      color: var(--negative);
+    .table-group:first-child th {
+      padding-top: 0;
     }
 
-    .evidence-grid {
+    .signal-stack {
+      display: grid;
+      gap: 4px;
+    }
+
+    .data-side .signal-stack {
+      gap: 3px;
+    }
+
+    .data-side .section-shell,
+    .data-side .memo-card,
+    .data-side .note-card {
+      padding: 8px 9px;
+    }
+
+    .data-side .section-header {
+      margin-bottom: 7px;
+      padding-bottom: 5px;
+    }
+
+    .data-side .memo-card .detail-line {
+      padding: 3px 0;
+    }
+
+    .data-side .memo-card .detail-key {
+      width: 34%;
+    }
+
+    .data-side .memo-card .detail-value {
+      width: 66%;
+    }
+
+    .data-side .signal-track {
+      margin-top: 2px;
+    }
+
+    .signal-note {
+      margin-top: 8px;
+    }
+
+    .chip-row {
+      margin-top: 8px;
+    }
+
+    .data-side .signal-note,
+    .data-side .chip-row {
       margin-top: 6px;
     }
 
-    .evidence-card {
-      background: #fffaf2;
-      border: 1px solid var(--line);
-      break-inside: avoid;
-      margin: 0 2% 6px 0;
-      page-break-inside: avoid;
-      padding: 7px 8px;
-      width: 49%;
+    .data-side .note-card .support-copy {
+      margin-top: 4px;
+      line-height: 1.3;
     }
 
-    .evidence-card:nth-child(2n) {
+    .data-side .note-card .body-copy {
+      line-height: 1.42;
+    }
+
+    .chip {
+      background: var(--accent-wash);
+      border: var(--border-thin) solid var(--accent-soft);
+      color: var(--ink);
+      margin: 0 4px 4px 0;
+    }
+
+    .chip.safe {
+      background: var(--safe-soft);
+      border-color: var(--safe);
+      color: var(--safe);
+    }
+
+    .chip.risk,
+    .chip.alert {
+      background: var(--risk-soft);
+      border-color: var(--risk);
+      color: var(--risk);
+    }
+
+    .chip.neutral {
+      background: var(--neutral-soft);
+      border-color: var(--neutral);
+      color: var(--neutral);
+    }
+
+    .detail-line {
+      border-bottom: var(--border-thin) solid var(--line);
+      padding: 5px 0;
+    }
+
+    .detail-line:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .detail-key {
+      width: 37%;
+    }
+
+    .detail-value {
+      color: var(--ink);
+      font-size: var(--type-body);
+      text-align: right;
+      width: 63%;
+    }
+
+    .analysis-band {
+      margin-top: 0;
+    }
+
+    .analysis-main {
+      padding-right: 3.6mm;
+      width: 69%;
+    }
+
+    .analysis-side {
+      width: 31%;
+    }
+
+    .analysis-headline {
+      color: var(--accent);
+      font-family: var(--font-korean-sans);
+      font-size: 7px;
+      letter-spacing: 0.16em;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .body-copy {
+      font-size: var(--type-copy);
+      line-height: 1.48;
+    }
+
+    .support-copy {
+      margin-top: 6px;
+    }
+
+    .analysis-side .memo-card {
+      background: linear-gradient(180deg, var(--sheet-strong), var(--panel));
+      margin-top: 0;
+      padding: 9px 10px;
+    }
+
+    .brief-grid,
+    .memo-grid {
+      font-size: 0;
+    }
+
+    .brief-item,
+    .memo-stat {
+      display: inline-block;
+      vertical-align: top;
+    }
+
+    .brief-item {
+      border-top: 1px solid rgba(171, 132, 83, 0.24);
+      margin: 0 3% 5px 0;
+      min-height: 12mm;
+      padding-top: 5px;
+      width: 48.5%;
+    }
+
+    .brief-item:nth-child(2n) {
       margin-right: 0;
     }
 
-    .evidence-card.is-referenced {
-      border-color: var(--accent);
-      box-shadow: inset 0 0 0 1px var(--accent-soft);
+    .brief-value,
+    .memo-stat-value {
+      color: var(--ink);
+      font-family: var(--font-korean-sans);
+      line-height: 1.08;
     }
 
-    h3 {
-      font-size: 10px;
+    .brief-value {
+      font-size: 13px;
+      margin-top: 3px;
+    }
+
+    .brief-note {
+      color: var(--muted);
+      font-size: 7.1px;
+      line-height: 1.3;
+      margin-top: 2px;
+    }
+
+    .ref-strip {
+      border-top: var(--border-thin) solid var(--line);
+      margin-top: 2px;
+      padding-top: 6px;
+    }
+
+    .ref-list {
+      margin-top: 4px;
+    }
+
+    .bullet-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .bullet-list li {
+      border-top: var(--border-thin) solid var(--line);
+      font-size: var(--type-body);
+      line-height: 1.38;
+      padding: 6px 0 0 9px;
+      position: relative;
+    }
+
+    .bullet-list li + li {
+      margin-top: 6px;
+    }
+
+    .bullet-list li:before {
+      background: var(--accent);
+      content: "";
+      height: 4px;
+      left: 0;
+      position: absolute;
+      top: 10px;
+      width: 4px;
+    }
+
+    .risk-panel .bullet-list li:before {
+      background: var(--risk);
+    }
+
+    .watch-panel .bullet-list li:before {
+      background: var(--neutral);
+    }
+
+    .memo-card {
+      background: linear-gradient(180deg, var(--sheet-strong), var(--panel));
+    }
+
+    .commentary-side .memo-card {
+      padding: 9px 10px;
+    }
+
+    .commentary-side .note-card {
+      margin-top: var(--space-2);
+      padding: 9px 10px;
+    }
+
+    .commentary-side .note-card .body-copy {
+      font-size: var(--type-caption);
+      line-height: 1.42;
+    }
+
+    .commentary-main .note-card {
+      padding: 9px 10px;
+    }
+
+    .commentary-main .note-card .body-copy {
+      font-size: var(--type-body);
+      line-height: 1.42;
+    }
+
+    .memo-grid {
+      margin-top: 1px;
+    }
+
+    .memo-stat {
+      border-top: var(--border-thin) solid rgba(171, 132, 83, 0.22);
+      margin: 0 2.8% 5px 0;
+      min-height: 11mm;
+      padding-top: 5px;
+      width: 48.6%;
+    }
+
+    .memo-stat:nth-child(2n) {
+      margin-right: 0;
+    }
+
+    .memo-stat-value {
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .memo-mini {
+      color: var(--muted);
+      font-size: 7px;
+      line-height: 1.28;
+      margin-top: 4px;
+    }
+
+    .warning-note {
+      background: var(--risk-soft);
+      border: var(--border-thin) solid var(--risk);
+      border-radius: var(--radius-sm);
+      color: var(--ink);
+      margin-top: 6px;
+      padding: 6px 7px;
+    }
+
+    .evidence-ledger {
+      margin-top: 2.4mm;
+    }
+
+    .evidence-card {
+      padding: 7px 8px 6px 10px;
+      position: relative;
+    }
+
+    .evidence-card + .evidence-card {
+      margin-top: 5px;
+    }
+
+    .evidence-card:before {
+      background: var(--line);
+      bottom: 0;
+      content: "";
+      left: 0;
+      position: absolute;
+      top: 0;
+      width: 1.2mm;
+    }
+
+    .evidence-card.is-referenced {
+      background: linear-gradient(90deg, var(--accent-wash), var(--panel-soft));
+    }
+
+    .evidence-card.is-referenced:before {
+      background: var(--accent);
+    }
+
+    .evidence-meta {
       margin-bottom: 4px;
     }
 
     .evidence-value {
-      margin-bottom: 5px;
+      font-size: 7.8px;
+      line-height: 1.31;
+      margin-top: 3px;
     }
 
-    .evidence-meta {
+    .ledger-line {
+      margin-top: 7px;
+    }
+
+    .ledger-id {
+      width: 30%;
+    }
+
+    .ledger-value {
       color: var(--muted);
-      font-size: 7px;
+      font-size: var(--type-caption);
+      text-align: right;
+      width: 70%;
+    }
+
+    .note-card {
+      background: linear-gradient(180deg, var(--sheet-strong), var(--panel-soft));
     }
 
     .footer {
-      border-top: 1px solid var(--line);
-      color: var(--muted);
-      break-inside: avoid;
-      margin-top: 8px;
-      page-break-inside: avoid;
+      border-top: var(--border-thin) solid var(--line);
+      bottom: 0.8mm;
+      left: 0;
       padding-top: 6px;
+      position: absolute;
+      width: 100%;
+    }
+
+    .footer-left {
+      width: 31%;
+    }
+
+    .footer-right {
+      width: 69%;
+    }
+
+    .footer-copy {
+      line-height: 1.34;
     }
 
     @media print {
       body {
-        background: #fff;
-        font-size: 9.5px;
-        line-height: 1.34;
-      }
-
-      .report-block {
-        box-shadow: none;
-        margin-bottom: 6px;
-        padding: 7.5mm 8mm 6.5mm;
-      }
-
-      .header-main,
-      .metrics-strip,
-      .dual-column,
-      .evidence-grid {
-        font-size: 0;
+        background: var(--sheet);
       }
 
       .report-page {
-        break-before: page;
-        page-break-before: always;
+        box-shadow: none;
+        margin-bottom: 0;
       }
-
-      .report-page:first-of-type {
-        break-before: auto;
-        page-break-before: auto;
-      }
-
-      .metric-card {
-        min-height: 50px;
-        padding: 6px 7px;
-      }
-    }
-
-    .footer-note {
-      font-size: 7px;
-      margin-bottom: 3px;
-    }
-
-    .footer-copy {
-      font-size: 8px;
     }
   </style>
 </head>
 <body>
+  {% macro percent(value, digits=1) -%}
+    {{ ("%." ~ digits ~ "f%%") | format(value * 100) }}
+  {%- endmacro %}
+  {% macro signed_percent(value, digits=1) -%}
+    {% if value > 0 %}+{% endif %}{{ ("%." ~ digits ~ "f%%") | format(value * 100) }}
+  {%- endmacro %}
+  {% macro compact_money(value) -%}
+    {% if value >= 1000000000000 %}
+      ${{ "%.2f" | format(value / 1000000000000) }}T
+    {% elif value >= 1000000000 %}
+      ${{ "%.1f" | format(value / 1000000000) }}B
+    {% elif value >= 1000000 %}
+      ${{ "%.1f" | format(value / 1000000) }}M
+    {% else %}
+      ${{ "{:,.0f}".format(value) }}
+    {% endif %}
+  {%- endmacro %}
+
   {% for recommendation in batch.recommendations %}
     {% set bucket_label = "안정 성장" if recommendation.bucket.value == "safer_growth" else "고위험 / 고성장" %}
     {% set bucket_class = "safe" if recommendation.bucket.value == "safer_growth" else "risk" %}
-    <section class="report-page">
-      <div class="report-block">
-      <div class="header">
-        <div class="eyebrow">Screener 분석 문서</div>
-        <div class="header-main">
-          <div class="title-block">
-            <div class="rank-chip">{{ batch.recommendations | length }}개 중 {{ recommendation.rank }}위</div>
-            <h1>
-              {{ recommendation.symbol }}
-              <span class="company-name">{{ recommendation.name }}</span>
-            </h1>
-            <p class="lede">{{ recommendation.rationale.text }}</p>
-            <div class="header-meta">
-              <div class="meta-item">
-                  <div class="meta-label">버킷</div>
-                <div class="meta-value">{{ bucket_label }}</div>
-              </div>
-              <div class="meta-item">
-                  <div class="meta-label">커버리지</div>
-                <div class="meta-value">{{ recommendation.sector }} / {{ recommendation.industry }}</div>
-              </div>
-              <div class="meta-item">
-                  <div class="meta-label">문안 출처</div>
-                  <div class="meta-value">{{ recommendation.rationale.source_mode }} / {{ recommendation.rationale.model_name }}</div>
-              </div>
-              <div class="meta-item">
-                  <div class="meta-label">실행 정보</div>
-                  <div class="meta-value">{{ batch.run_id }} / {{ batch.as_of }}</div>
-              </div>
+    {% set metrics = recommendation.metrics %}
+    {% set show_forward_pe = metrics.forward_pe is not none %}
+    {% set composite_pct = recommendation.composite_score * 100 %}
+    {% set valuation_pct = recommendation.valuation_score * 100 %}
+    {% set growth_pct = recommendation.growth_score * 100 %}
+    {% set quality_pct = recommendation.quality_score * 100 %}
+    {% set risk_pct = recommendation.risk_score * 100 %}
+    {% set macro_band = (recommendation.macro_overlay + 0.20) * 250 %}
+    {% if macro_band < 0 %}{% set macro_band = 0 %}{% endif %}
+    {% if macro_band > 100 %}{% set macro_band = 100 %}{% endif %}
+    {% set fcf_yield_bar = metrics.fcf_yield * 900 %}
+    {% if fcf_yield_bar < 0 %}{% set fcf_yield_bar = 0 %}{% endif %}
+    {% if fcf_yield_bar > 100 %}{% set fcf_yield_bar = 100 %}{% endif %}
+    {% set earnings_yield_bar = metrics.earnings_yield * 900 %}
+    {% if earnings_yield_bar < 0 %}{% set earnings_yield_bar = 0 %}{% endif %}
+    {% if earnings_yield_bar > 100 %}{% set earnings_yield_bar = 100 %}{% endif %}
+    {% set ev_to_ebit_bar = 100 - (metrics.ev_to_ebit * 3.4) %}
+    {% if ev_to_ebit_bar < 0 %}{% set ev_to_ebit_bar = 0 %}{% endif %}
+    {% if ev_to_ebit_bar > 100 %}{% set ev_to_ebit_bar = 100 %}{% endif %}
+    {% set forward_pe_bar = 0 %}
+    {% if show_forward_pe %}
+      {% set forward_pe_bar = 100 - (metrics.forward_pe * 3.4) %}
+      {% if forward_pe_bar < 0 %}{% set forward_pe_bar = 0 %}{% endif %}
+      {% if forward_pe_bar > 100 %}{% set forward_pe_bar = 100 %}{% endif %}
+    {% endif %}
+    {% set revenue_growth_bar = metrics.revenue_growth_yoy * 240 %}
+    {% if revenue_growth_bar < 0 %}{% set revenue_growth_bar = 0 %}{% endif %}
+    {% if revenue_growth_bar > 100 %}{% set revenue_growth_bar = 100 %}{% endif %}
+    {% set ebit_margin_bar = metrics.ebit_margin * 220 %}
+    {% if ebit_margin_bar < 0 %}{% set ebit_margin_bar = 0 %}{% endif %}
+    {% if ebit_margin_bar > 100 %}{% set ebit_margin_bar = 100 %}{% endif %}
+    {% set current_ratio_bar = metrics.current_ratio * 33 %}
+    {% if current_ratio_bar < 0 %}{% set current_ratio_bar = 0 %}{% endif %}
+    {% if current_ratio_bar > 100 %}{% set current_ratio_bar = 100 %}{% endif %}
+    {% set debt_bar = 100 - (metrics.debt_to_equity * 45) %}
+    {% if debt_bar < 0 %}{% set debt_bar = 0 %}{% endif %}
+    {% if debt_bar > 100 %}{% set debt_bar = 100 %}{% endif %}
+    {% set beta_bar = 100 - (metrics.beta * 45) %}
+    {% if beta_bar < 0 %}{% set beta_bar = 0 %}{% endif %}
+    {% if beta_bar > 100 %}{% set beta_bar = 100 %}{% endif %}
+    {% set analyst_bar = metrics.analyst_upside * 260 %}
+    {% if analyst_bar < 0 %}{% set analyst_bar = 0 %}{% endif %}
+    {% if analyst_bar > 100 %}{% set analyst_bar = 100 %}{% endif %}
+    <article class="report-block">
+      <section class="report-page report-page--data">
+        <div class="page-shell">
+          <div class="page-top">
+            <div class="page-top-left">
+              <span class="rank-chip">{{ batch.recommendations | length }}개 중 {{ recommendation.rank }}위</span>
+              <span class="page-chip">1 / 2 data sheet</span>
             </div>
-          </div>
-          <div class="score-block">
-            <div class="score-shell">
-              <div class="score-title">종합 스크린 점수</div>
-              <div class="score-number">{{ "%.0f" | format(recommendation.composite_score * 100) }}</div>
-              <div class="score-subtitle">현재 스크린 내부 상대 점수이며 목표주가가 아닙니다.</div>
-
-              <div class="score-row">
-                <div class="score-row-head">
-                  <span class="score-name">밸류에이션</span>
-                  <span class="score-value">{{ "%.0f" | format(recommendation.valuation_score * 100) }}</span>
-                </div>
-                <div class="score-track"><div class="score-fill safe" style="width: {{ "%.0f" | format(recommendation.valuation_score * 100) }}%;"></div></div>
-              </div>
-              <div class="score-row">
-                <div class="score-row-head">
-                  <span class="score-name">성장성</span>
-                  <span class="score-value">{{ "%.0f" | format(recommendation.growth_score * 100) }}</span>
-                </div>
-                <div class="score-track"><div class="score-fill" style="width: {{ "%.0f" | format(recommendation.growth_score * 100) }}%;"></div></div>
-              </div>
-              <div class="score-row">
-                <div class="score-row-head">
-                  <span class="score-name">퀄리티</span>
-                  <span class="score-value">{{ "%.0f" | format(recommendation.quality_score * 100) }}</span>
-                </div>
-                <div class="score-track"><div class="score-fill safe" style="width: {{ "%.0f" | format(recommendation.quality_score * 100) }}%;"></div></div>
-              </div>
-              <div class="score-row">
-                <div class="score-row-head">
-                  <span class="score-name">리스크</span>
-                  <span class="score-value">{{ "%.0f" | format(recommendation.risk_score * 100) }}</span>
-                </div>
-                <div class="score-track"><div class="score-fill risk" style="width: {{ "%.0f" | format(recommendation.risk_score * 100) }}%;"></div></div>
-              </div>
-              <div class="score-row">
-                <div class="score-row-head">
-                  <span class="score-name">매크로 반영</span>
-                  <span class="score-value">{{ "%.2f" | format(recommendation.macro_overlay) }}</span>
-                </div>
-                <div class="score-track"><div class="score-fill neutral" style="width: {{ "%.0f" | format((recommendation.macro_overlay + 0.2) * 250) }}%;"></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="metrics-strip">
-          <div class="metric-card">
-          <div class="mini-label">선정 등급</div>
-          <div class="metric-value">{{ recommendation.selection_tier }}</div>
-          <div class="metric-note">현재 규칙셋 기준에서 별도 수동 보정 없이 통과한 종목입니다.</div>
-        </div>
-        <div class="metric-card">
-          <div class="mini-label">근거 패킷 수</div>
-          <div class="metric-value">{{ recommendation.evidence | length }}</div>
-          <div class="metric-note">문안과 수치 근거를 교차 검증할 수 있는 구조화 데이터입니다.</div>
-        </div>
-        <div class="metric-card">
-          <div class="mini-label">문안 참조 수</div>
-          <div class="metric-value">{{ recommendation.rationale.evidence_refs | length }}</div>
-          <div class="metric-note">문안이 직접 참조한 evidence id 개수입니다.</div>
-        </div>
-        <div class="metric-card">
-          <div class="mini-label">프롬프트 계보</div>
-          <div class="metric-value">{{ batch.prompt_version }}</div>
-          <div class="metric-note">랭킹 {{ batch.ranking_version }} / 모델 {{ batch.model_version }}</div>
-        </div>
-      </div>
-      </div>
-
-      <div class="report-block">
-      <div class="dual-column">
-        <div class="column">
-          <div class="panel">
-            <div class="panel-kicker">중립 해설</div>
-            <h2>스크린 해석</h2>
-            <p class="analysis-copy">{{ recommendation.symbol }}은(는) {{ bucket_label }} 구간에서 종합 점수 {{ "%.4f" | format(recommendation.composite_score) }}를 기록했습니다. 이 스크린은 단일 지표보다 상대 밸류에이션, 성장 지속성, 퀄리티, 하방 방어력을 함께 반영합니다.</p>
-            <p class="support-copy">문안은 {{ recommendation.rationale.source_mode }} 출력과 {{ recommendation.evidence | length }}개의 evidence 항목을 바탕으로 구성되어, 과도한 전망보다 검증 가능한 신호 중심으로 읽히도록 설계했습니다.</p>
-            <div class="badge-row">
-              <span class="badge {{ bucket_class }}">{{ bucket_label }}</span>
-              <span class="badge">{{ recommendation.sector }}</span>
-              <span class="badge">{{ recommendation.industry }}</span>
-              <span class="badge">{{ recommendation.rationale.source_mode }}</span>
-              {% if recommendation.rationale.warning %}
-                <span class="badge alert">대체 문안 포함</span>
-              {% endif %}
+            <div class="page-top-right">
+              <div class="eyebrow">Screener research dossier</div>
             </div>
           </div>
 
-          <div class="panel">
-            <div class="panel-kicker">점수 해석</div>
-            <h2>강점 균형</h2>
-            <p class="analysis-copy">상대 점수 기준으로 밸류에이션 {{ "%.0f" | format(recommendation.valuation_score * 100) }}, 성장 {{ "%.0f" | format(recommendation.growth_score * 100) }}, 퀄리티 {{ "%.0f" | format(recommendation.quality_score * 100) }}, 리스크 {{ "%.0f" | format(recommendation.risk_score * 100) }}를 기록했습니다. 이 조합은 왜 해당 종목이 상위에 올랐는지, 그리고 어떤 부분에서 실행 지속성이 중요한지를 보여줍니다.</p>
-            <p class="support-copy">매크로 반영치는 {{ "%.2f" | format(recommendation.macro_overlay) }}이며, {% if recommendation.macro_overlay > 0 %}현재 거시 환경이 소폭 우호적으로 작용하고{% elif recommendation.macro_overlay < 0 %}현재 거시 환경이 일부 부담으로 작용하고{% else %}매크로 영향이 중립적입니다{% endif %}. 이 값은 배치 내부 비교를 돕기 위한 보조 신호입니다.</p>
-          </div>
+          <section class="hero-band">
+            <div class="hero-table">
+              <div class="hero-main">
+                <div class="eyebrow">{{ recommendation.sector }} / {{ recommendation.industry }}</div>
+                <h1>
+                  {{ recommendation.symbol }}
+                  <span class="company-name">{{ recommendation.name }}</span>
+                </h1>
+                <p class="hero-copy">{{ recommendation.symbol }}은(는) 이번 배치에서 {{ bucket_label }} 구간 상위권으로 선별된 종목입니다. 이 1페이지는 기존 요약 카드, 점수 분해, 원시 지표, 세부 수치 행을 한 장에 밀도 높게 고정한 데이터 시트이며, 빠른 우선순위 정리와 후속 검토 기준선을 동시에 제공합니다.</p>
+                <div class="meta-grid">
+                  <div class="meta-item">
+                    <div class="meta-label">버킷</div>
+                    <div class="meta-value">{{ bucket_label }}</div>
+                  </div>
+                  <div class="meta-item">
+                    <div class="meta-label">실행 기준일</div>
+                    <div class="meta-value">{{ recommendation.as_of }}</div>
+                  </div>
+                  <div class="meta-item">
+                    <div class="meta-label">문안 출처</div>
+                    <div class="meta-value">{{ recommendation.rationale.source_mode }} / {{ recommendation.rationale.model_name }}</div>
+                  </div>
+                  <div class="meta-item">
+                    <div class="meta-label">실행 정보</div>
+                    <div class="meta-value">{{ batch.run_id }} / {{ batch.prompt_version }}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="hero-side">
+                <div class="score-panel">
+                  <div class="score-title">종합 스크린 점수</div>
+                  <div class="score-number">{{ "%.0f" | format(composite_pct) }}</div>
+                  <div class="score-subtitle">배치 내부 상대 점수 요약입니다. 목표주가나 절대평가가 아니라, 동일 규칙셋 안에서 어떤 신호가 상대적으로 강한지 보여 주는 압축 지표입니다.</div>
 
-          <div class="panel">
-            <div class="panel-kicker">선정 근거</div>
-            <h2>핵심 포인트</h2>
-            <ul>
-              {% for reason in recommendation.rationale.key_reasons %}
-                <li>{{ reason }}</li>
-              {% endfor %}
-            </ul>
-          </div>
-        </div>
-
-        <div class="column">
-          <div class="panel">
-            <div class="panel-kicker">리스크 점검</div>
-            <h2>주요 리스크</h2>
-            <ul>
-              {% for risk in recommendation.rationale.primary_risks %}
-                <li>{{ risk }}</li>
-              {% endfor %}
-            </ul>
-          </div>
-
-          <div class="panel">
-            <div class="panel-kicker">모니터링 계획</div>
-            <h2>체크 포인트</h2>
-            <ul>
-              {% for watch_item in recommendation.rationale.watch_items %}
-                <li>{{ watch_item }}</li>
-              {% endfor %}
-            </ul>
-          </div>
-
-          <div class="panel">
-            <div class="panel-kicker">프로세스 메모</div>
-            <h2>근거 사용 내역</h2>
-            <p class="analysis-copy">이 페이지에서 직접 참조한 evidence: {% for ref in recommendation.rationale.evidence_refs %}<span class="badge">{{ ref }}</span>{% endfor %}</p>
-            {% if recommendation.rationale.warning %}
-              <p class="support-copy"><strong>생성 메모:</strong> {{ recommendation.rationale.warning }}</p>
-            {% else %}
-              <p class="support-copy">생성 경고는 없습니다. 아래 evidence ledger를 통해 문안과 수치 근거를 직접 대조할 수 있습니다.</p>
-            {% endif %}
-          </div>
-        </div>
-      </div>
-      </div>
-
-      <div class="report-block">
-      <div class="panel" style="margin-bottom: 0;">
-        <div class="panel-kicker">evidence ledger</div>
-        <h2>문서화된 근거</h2>
-        <div class="evidence-grid">
-          {% for item in recommendation.evidence %}
-            <div class="evidence-card{% if item.evidence_id in recommendation.rationale.evidence_refs %} is-referenced{% endif %}">
-              <h3>{{ item.label }}</h3>
-              <p class="evidence-value">{{ item.value }}</p>
-              <div class="evidence-meta">{{ item.evidence_id }} / {{ item.source }} / {{ item.as_of }}</div>
+                  <div class="score-row">
+                    <div class="score-row-head">
+                      <span class="score-name">밸류에이션</span>
+                      <span class="score-value">{{ "%.0f" | format(valuation_pct) }}</span>
+                    </div>
+                    <div class="score-track"><div class="score-fill safe" style="width: {{ "%.0f" | format(valuation_pct) }}%;"></div></div>
+                  </div>
+                  <div class="score-row">
+                    <div class="score-row-head">
+                      <span class="score-name">성장성</span>
+                      <span class="score-value">{{ "%.0f" | format(growth_pct) }}</span>
+                    </div>
+                    <div class="score-track"><div class="score-fill" style="width: {{ "%.0f" | format(growth_pct) }}%;"></div></div>
+                  </div>
+                  <div class="score-row">
+                    <div class="score-row-head">
+                      <span class="score-name">퀄리티</span>
+                      <span class="score-value">{{ "%.0f" | format(quality_pct) }}</span>
+                    </div>
+                    <div class="score-track"><div class="score-fill safe" style="width: {{ "%.0f" | format(quality_pct) }}%;"></div></div>
+                  </div>
+                  <div class="score-row">
+                    <div class="score-row-head">
+                      <span class="score-name">리스크 방어력</span>
+                      <span class="score-value">{{ "%.0f" | format(risk_pct) }}</span>
+                    </div>
+                    <div class="score-track"><div class="score-fill risk" style="width: {{ "%.0f" | format(risk_pct) }}%;"></div></div>
+                  </div>
+                  <div class="score-row">
+                    <div class="score-row-head">
+                      <span class="score-name">매크로 반영</span>
+                      <span class="score-value">{{ "%.2f" | format(recommendation.macro_overlay) }}</span>
+                    </div>
+                    <div class="score-track"><div class="score-fill neutral" style="width: {{ "%.0f" | format(macro_band) }}%;"></div></div>
+                  </div>
+                </div>
+              </div>
             </div>
-          {% endfor %}
-        </div>
-      </div>
-      </div>
+          </section>
 
-      <div class="report-block compact">
-      <div class="footer" style="margin-top: 0;">
-        <div class="footer-note">정보 제공용 리서치 문서</div>
-        <p class="footer-copy">{{ disclaimer }} 이 페이지는 {{ batch.run_id }} 실행에서 생성된 {{ recommendation.symbol }} 결과를 정적으로 정리한 문서입니다.</p>
-      </div>
-      </div>
-    </section>
+          <section class="summary-strip">
+            <article class="summary-card">
+              <div class="summary-label">선정 등급</div>
+              <div class="summary-value">{{ recommendation.selection_tier }}</div>
+              <div class="summary-note">현재 규칙셋 기준에서 상대 점수 조합이 가장 먼저 통과한 티어입니다.</div>
+            </article>
+            <article class="summary-card">
+              <div class="summary-label">근거 패킷 수</div>
+              <div class="summary-value">{{ recommendation.evidence | length }}</div>
+              <div class="summary-note">문안과 수치를 대조할 수 있는 구조화 evidence 항목 수입니다.</div>
+            </article>
+            <article class="summary-card">
+              <div class="summary-label">문안 참조 수</div>
+              <div class="summary-value">{{ recommendation.rationale.evidence_refs | length }}</div>
+              <div class="summary-note">문안이 직접 참조한 evidence id 개수만 별도로 표시했습니다.</div>
+            </article>
+            <article class="summary-card">
+              <div class="summary-label">프롬프트 계보</div>
+              <div class="summary-value">{{ batch.prompt_version }}</div>
+              <div class="summary-note">랭킹 {{ batch.ranking_version }} / 모델 {{ batch.model_version }} 기준 산출입니다.</div>
+            </article>
+          </section>
+
+          <section class="page-body data-grid">
+            <div class="data-main">
+              <article class="section-shell">
+                <div class="section-header">
+                  <div class="section-kicker">metric spotlight</div>
+                  <h2>핵심 수치 프레임</h2>
+                </div>
+                <div class="spotlight-grid">
+                  <div class="spotlight-card">
+                    <div class="card-label">시가총액</div>
+                    <div class="card-value">{{ compact_money(metrics.market_cap) }}</div>
+                    <div class="card-note">현재 스냅샷 기준 규모로, 배치 내 포지셔닝의 출발점입니다.</div>
+                  </div>
+                  <div class="spotlight-card">
+                    <div class="card-label">주가</div>
+                    <div class="card-value">${{ "%.2f" | format(metrics.price) }}</div>
+                    <div class="card-note">보고서 생성 시점의 호가가 아니라 입력 스냅샷 가격입니다.</div>
+                  </div>
+                  <div class="spotlight-card">
+                    <div class="card-label">FCF yield</div>
+                    <div class="card-value">{{ percent(metrics.fcf_yield, 2) }}</div>
+                    <div class="mini-track"><div class="mini-fill safe" style="width: {{ "%.0f" | format(fcf_yield_bar) }}%;"></div></div>
+                  </div>
+                  <div class="spotlight-card">
+                    <div class="card-label">매출 성장률 YoY</div>
+                    <div class="card-value">{{ signed_percent(metrics.revenue_growth_yoy, 1) }}</div>
+                    <div class="mini-track"><div class="mini-fill" style="width: {{ "%.0f" | format(revenue_growth_bar) }}%;"></div></div>
+                  </div>
+                  <div class="spotlight-card">
+                    <div class="card-label">EBIT margin</div>
+                    <div class="card-value">{{ percent(metrics.ebit_margin, 1) }}</div>
+                    <div class="mini-track"><div class="mini-fill safe" style="width: {{ "%.0f" | format(ebit_margin_bar) }}%;"></div></div>
+                  </div>
+                  <div class="spotlight-card">
+                    <div class="card-label">ROIC</div>
+                    <div class="card-value">{{ percent(metrics.roic, 1) }}</div>
+                    <div class="card-note">자본 효율은 퀄리티 해석의 핵심 연결점입니다.</div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="section-shell">
+                <div class="section-header">
+                  <div class="section-kicker">detailed metric rows</div>
+                  <h2>세부 수치표</h2>
+                </div>
+                <table class="metric-table">
+                  <tr class="table-group"><th colspan="4">밸류에이션 / 현금흐름</th></tr>
+                  <tr>
+                    <td class="label">FCF yield</td>
+                    <td class="value">{{ percent(metrics.fcf_yield, 2) }}</td>
+                    <td class="label">Earnings yield</td>
+                    <td class="value">{{ percent(metrics.earnings_yield, 2) }}</td>
+                  </tr>
+                  <tr>
+                    <td class="label">PE ratio</td>
+                    <td class="value">{{ "%.1f" | format(metrics.pe_ratio) }}x</td>
+                    <td class="label">EV/EBIT</td>
+                    <td class="value">{{ "%.1f" | format(metrics.ev_to_ebit) }}x</td>
+                  </tr>
+                  {% if show_forward_pe %}
+                    <tr>
+                      <td class="label">Forward PE</td>
+                      <td class="value">{{ "%.1f" | format(metrics.forward_pe) }}x</td>
+                      <td class="label">주가</td>
+                      <td class="value">${{ "%.2f" | format(metrics.price) }}</td>
+                    </tr>
+                  {% else %}
+                    <tr>
+                      <td class="label">주가</td>
+                      <td class="value">${{ "%.2f" | format(metrics.price) }}</td>
+                      <td class="label">시가총액</td>
+                      <td class="value">{{ compact_money(metrics.market_cap) }}</td>
+                    </tr>
+                  {% endif %}
+                  <tr class="table-group"><th colspan="4">성장 / 수익성</th></tr>
+                  <tr>
+                    <td class="label">매출 성장률</td>
+                    <td class="value">{{ percent(metrics.revenue_growth_yoy, 1) }}</td>
+                    <td class="label">FCF 성장률</td>
+                    <td class="value">{{ percent(metrics.fcf_growth_yoy, 1) }}</td>
+                  </tr>
+                  <tr>
+                    <td class="label">EBIT margin</td>
+                    <td class="value">{{ percent(metrics.ebit_margin, 1) }}</td>
+                    <td class="label">Gross margin</td>
+                    <td class="value">{{ percent(metrics.gross_margin, 1) }}</td>
+                  </tr>
+                  <tr>
+                    <td class="label">ROIC</td>
+                    <td class="value">{{ percent(metrics.roic, 1) }}</td>
+                    <td class="label">애널리스트 업사이드</td>
+                    <td class="value">{{ percent(metrics.analyst_upside, 1) }}</td>
+                  </tr>
+                  <tr class="table-group"><th colspan="4">대차대조 / 리스크 / 품질</th></tr>
+                  <tr>
+                    <td class="label">Debt / Equity</td>
+                    <td class="value">{{ "%.2f" | format(metrics.debt_to_equity) }}x</td>
+                    <td class="label">Current ratio</td>
+                    <td class="value">{{ "%.2f" | format(metrics.current_ratio) }}x</td>
+                  </tr>
+                  <tr>
+                    <td class="label">Beta</td>
+                    <td class="value">{{ "%.2f" | format(metrics.beta) }}</td>
+                    <td class="label">데이터 품질 점수</td>
+                    <td class="value">{{ "%.2f" | format(metrics.data_quality_score) }}</td>
+                  </tr>
+                  <tr>
+                    <td class="label">Stale days</td>
+                    <td class="value">{{ metrics.stale_days }}</td>
+                    <td class="label">배치 기준일</td>
+                    <td class="value">{{ recommendation.as_of }}</td>
+                  </tr>
+                </table>
+                <div class="table-note">Forward PE는 recommendation.metrics에 실제로 포함될 때만 표기합니다. 현재 페이지는 존재하는 스냅샷 필드만 사용해 밸류에이션, 성장, 리스크 해석을 고정 구성으로 보여 줍니다.</div>
+              </article>
+            </div>
+
+            <div class="data-side">
+              <article class="section-shell">
+                <div class="section-header">
+                  <div class="section-kicker">signal ledger</div>
+                  <h2>원시 신호 바</h2>
+                </div>
+                <div class="signal-stack">
+                  <div class="signal-row">
+                    <div class="signal-row-head">
+                      <span class="signal-label">FCF yield</span>
+                      <span class="signal-value">{{ percent(metrics.fcf_yield, 2) }}</span>
+                    </div>
+                    <div class="signal-track"><div class="signal-fill safe" style="width: {{ "%.0f" | format(fcf_yield_bar) }}%;"></div></div>
+                  </div>
+                  <div class="signal-row">
+                    <div class="signal-row-head">
+                      <span class="signal-label">Earnings yield</span>
+                      <span class="signal-value">{{ percent(metrics.earnings_yield, 2) }}</span>
+                    </div>
+                    <div class="signal-track"><div class="signal-fill safe" style="width: {{ "%.0f" | format(earnings_yield_bar) }}%;"></div></div>
+                  </div>
+                  <div class="signal-row">
+                    <div class="signal-row-head">
+                      <span class="signal-label">EV/EBIT 부담도</span>
+                      <span class="signal-value">{{ "%.1f" | format(metrics.ev_to_ebit) }}x</span>
+                    </div>
+                    <div class="signal-track"><div class="signal-fill" style="width: {{ "%.0f" | format(ev_to_ebit_bar) }}%;"></div></div>
+                  </div>
+                  {% if show_forward_pe %}
+                    <div class="signal-row">
+                      <div class="signal-row-head">
+                        <span class="signal-label">Forward PE</span>
+                        <span class="signal-value">{{ "%.1f" | format(metrics.forward_pe) }}x</span>
+                      </div>
+                      <div class="signal-track"><div class="signal-fill neutral" style="width: {{ "%.0f" | format(forward_pe_bar) }}%;"></div></div>
+                    </div>
+                  {% endif %}
+                  <div class="signal-row">
+                    <div class="signal-row-head">
+                      <span class="signal-label">매출 성장 속도</span>
+                      <span class="signal-value">{{ percent(metrics.revenue_growth_yoy, 1) }}</span>
+                    </div>
+                    <div class="signal-track"><div class="signal-fill" style="width: {{ "%.0f" | format(revenue_growth_bar) }}%;"></div></div>
+                  </div>
+                  <div class="signal-row">
+                    <div class="signal-row-head">
+                      <span class="signal-label">EBIT margin 방어력</span>
+                      <span class="signal-value">{{ percent(metrics.ebit_margin, 1) }}</span>
+                    </div>
+                    <div class="signal-track"><div class="signal-fill safe" style="width: {{ "%.0f" | format(ebit_margin_bar) }}%;"></div></div>
+                  </div>
+                  <div class="signal-row">
+                    <div class="signal-row-head">
+                      <span class="signal-label">유동성 완충</span>
+                      <span class="signal-value">{{ "%.2f" | format(metrics.current_ratio) }}x</span>
+                    </div>
+                    <div class="signal-track"><div class="signal-fill neutral" style="width: {{ "%.0f" | format(current_ratio_bar) }}%;"></div></div>
+                  </div>
+                  <div class="signal-row">
+                    <div class="signal-row-head">
+                      <span class="signal-label">레버리지 여유</span>
+                      <span class="signal-value">{{ "%.2f" | format(metrics.debt_to_equity) }}x</span>
+                    </div>
+                    <div class="signal-track"><div class="signal-fill risk" style="width: {{ "%.0f" | format(debt_bar) }}%;"></div></div>
+                  </div>
+                  <div class="signal-row">
+                    <div class="signal-row-head">
+                      <span class="signal-label">시장 민감도</span>
+                      <span class="signal-value">{{ "%.2f" | format(metrics.beta) }}</span>
+                    </div>
+                    <div class="signal-track"><div class="signal-fill risk" style="width: {{ "%.0f" | format(beta_bar) }}%;"></div></div>
+                  </div>
+                  <div class="signal-row">
+                    <div class="signal-row-head">
+                      <span class="signal-label">애널리스트 업사이드</span>
+                      <span class="signal-value">{{ percent(metrics.analyst_upside, 1) }}</span>
+                    </div>
+                    <div class="signal-track"><div class="signal-fill neutral" style="width: {{ "%.0f" | format(analyst_bar) }}%;"></div></div>
+                  </div>
+                </div>
+                <div class="signal-note">바 길이는 읽기 보조용 정규화 표현입니다. 숫자는 항상 오른쪽 원문 값을 기준으로 해석합니다.</div>
+              </article>
+
+              <article class="memo-card">
+                <div class="section-header">
+                  <div class="section-kicker">process memo</div>
+                  <h2>프로세스 메모</h2>
+                </div>
+                <div class="detail-line">
+                  <div class="detail-key">선정 구간</div>
+                  <div class="detail-value">{{ bucket_label }}</div>
+                </div>
+                <div class="detail-line">
+                  <div class="detail-key">선정 등급</div>
+                  <div class="detail-value">{{ recommendation.selection_tier }}</div>
+                </div>
+                <div class="detail-line">
+                  <div class="detail-key">참조 근거</div>
+                  <div class="detail-value">{{ recommendation.rationale.evidence_refs | length }} ids</div>
+                </div>
+                <div class="detail-line">
+                  <div class="detail-key">모델 계보</div>
+                  <div class="detail-value">{{ recommendation.rationale.source_mode }} / {{ recommendation.rationale.model_name }}</div>
+                </div>
+                <div class="detail-line">
+                  <div class="detail-key">랭킹 / 프롬프트</div>
+                  <div class="detail-value">{{ batch.ranking_version }} / {{ batch.prompt_version }}</div>
+                </div>
+                <div class="detail-line">
+                  <div class="detail-key">배치 모델</div>
+                  <div class="detail-value">{{ batch.model_version }}</div>
+                </div>
+                <div class="chip-row">
+                  <span class="chip {{ bucket_class }}">{{ bucket_label }}</span>
+                  <span class="chip">{{ recommendation.sector }}</span>
+                  <span class="chip">{{ recommendation.industry }}</span>
+                  <span class="chip neutral">quality {{ "%.0f" | format(quality_pct) }}</span>
+                  {% if recommendation.rationale.warning %}
+                    <span class="chip alert">대체 문안 포함</span>
+                  {% endif %}
+                </div>
+              </article>
+
+            </div>
+          </section>
+
+          <div class="footer">
+            <div class="footer-grid">
+              <div class="footer-left">
+                <div class="footer-note">정보 제공용 리서치 문서 / data sheet</div>
+              </div>
+              <div class="footer-right">
+                <p class="footer-copy">{{ disclaimer }} {{ recommendation.symbol }}의 1페이지는 요약 카드, 점수 분해, 시각 신호, 세부 수치 행을 같은 지면에서 확인하도록 설계한 고정형 데이터 시트입니다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="report-page report-page--commentary">
+        <div class="page-shell">
+          <div class="page-top">
+            <div class="page-top-left">
+              <span class="rank-chip">{{ recommendation.symbol }} commentary</span>
+              <span class="page-chip">2 / 2 commentary sheet</span>
+            </div>
+            <div class="page-top-right">
+              <div class="eyebrow">Screener research dossier</div>
+            </div>
+          </div>
+
+          <section class="analysis-band">
+            <div class="analysis-grid">
+              <div class="analysis-main">
+                <div class="analysis-headline">중립 해설</div>
+                <h2>스크린 해석과 확인 포인트</h2>
+                <p class="body-copy">{{ recommendation.rationale.text }}</p>
+                <p class="support-copy">{{ recommendation.symbol }}은(는) {{ bucket_label }} 구간에서 종합 점수 {{ "%.4f" | format(recommendation.composite_score) }}를 기록했습니다. 상대 밸류에이션, 성장 지속성, 퀄리티, 하방 방어력, 매크로 반영치를 함께 읽어 우선순위를 정한 결과이며, 과도한 방향성 주장보다 확인 가능한 입력값을 우선합니다.</p>
+              </div>
+              <div class="analysis-side">
+                <div class="memo-card">
+                  <div class="section-header">
+                    <div class="section-kicker">commentary frame</div>
+                    <h2>코멘터리 스냅샷</h2>
+                  </div>
+                  <div class="brief-grid">
+                    <div class="brief-item">
+                      <div class="section-kicker">종합 점수</div>
+                      <div class="brief-value">{{ "%.0f" | format(composite_pct) }}</div>
+                      <div class="brief-note">배치 내 상대 강도</div>
+                    </div>
+                    <div class="brief-item">
+                      <div class="section-kicker">선정 구간</div>
+                      <div class="brief-value">{{ bucket_label }}</div>
+                      <div class="brief-note">현재 규칙셋 해석 축</div>
+                    </div>
+                    <div class="brief-item">
+                      <div class="section-kicker">핵심 근거 수</div>
+                      <div class="brief-value">{{ recommendation.rationale.key_reasons | length }}</div>
+                      <div class="brief-note">중심 논거 묶음</div>
+                    </div>
+                    <div class="brief-item">
+                      <div class="section-kicker">참조 id</div>
+                      <div class="brief-value">{{ recommendation.rationale.evidence_refs | length }}</div>
+                      <div class="brief-note">문안 직접 연결 수</div>
+                    </div>
+                  </div>
+                  <div class="ref-strip">
+                    <div class="section-kicker">reference strip</div>
+                    <div class="ref-list">
+                      {% for ref in recommendation.rationale.evidence_refs %}
+                        <span class="chip">{{ ref }}</span>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="page-body commentary-grid">
+            <div class="commentary-main">
+              <article class="section-shell">
+                <div class="section-header">
+                  <div class="section-kicker">key reasons</div>
+                  <h2>핵심 근거</h2>
+                </div>
+                <ul class="bullet-list">
+                  {% for reason in recommendation.rationale.key_reasons %}
+                    <li>{{ reason }}</li>
+                  {% endfor %}
+                </ul>
+              </article>
+
+              <article class="section-shell risk-panel">
+                <div class="section-header">
+                  <div class="section-kicker">risk review</div>
+                  <h2>주요 리스크</h2>
+                </div>
+                <ul class="bullet-list">
+                  {% for risk in recommendation.rationale.primary_risks %}
+                    <li>{{ risk }}</li>
+                  {% endfor %}
+                </ul>
+              </article>
+
+              <article class="section-shell watch-panel">
+                <div class="section-header">
+                  <div class="section-kicker">watch items</div>
+                  <h2>체크 포인트</h2>
+                </div>
+                <ul class="bullet-list">
+                  {% for watch_item in recommendation.rationale.watch_items %}
+                    <li>{{ watch_item }}</li>
+                  {% endfor %}
+                </ul>
+              </article>
+
+              <article class="note-card">
+                <div class="section-header">
+                  <div class="section-kicker">reading note</div>
+                  <h2>해석 프레임</h2>
+                </div>
+                <p class="body-copy">이 페이지의 큰 숫자와 바는 같은 배치 내부에서 강약을 빠르게 읽기 위한 연구용 인터페이스입니다. 실제 판단은 2페이지의 중립 해설, 리스크, 체크 포인트, evidence ledger와 함께 보아야 균형이 맞습니다.<br><br>밸류에이션은 FCF yield, earnings yield, PE ratio, EV/EBIT를 묶어 읽고, 성장성은 매출과 FCF 증가율을 함께 확인하도록 구성했습니다. 리스크 해석에는 부채비율, 유동비율, beta, 데이터 품질을 동시에 배치했습니다.</p>
+              </article>
+            </div>
+
+            <div class="commentary-side">
+              <article class="memo-card">
+                <div class="section-header">
+                  <div class="section-kicker">process memo</div>
+                  <h2>해설 메모</h2>
+                </div>
+                <div class="memo-grid">
+                  <div class="memo-stat">
+                    <div class="section-kicker">선정 구간</div>
+                    <div class="memo-stat-value">{{ bucket_label }}</div>
+                  </div>
+                  <div class="memo-stat">
+                    <div class="section-kicker">선정 등급</div>
+                    <div class="memo-stat-value">{{ recommendation.selection_tier }}</div>
+                  </div>
+                  <div class="memo-stat">
+                    <div class="section-kicker">점수 조합</div>
+                    <div class="memo-stat-value">V {{ "%.0f" | format(valuation_pct) }} / G {{ "%.0f" | format(growth_pct) }}</div>
+                  </div>
+                  <div class="memo-stat">
+                    <div class="section-kicker">퀄리티 / 리스크</div>
+                    <div class="memo-stat-value">Q {{ "%.0f" | format(quality_pct) }} / R {{ "%.0f" | format(risk_pct) }}</div>
+                  </div>
+                  <div class="memo-stat">
+                    <div class="section-kicker">매크로 반영</div>
+                    <div class="memo-stat-value">{{ "%.2f" | format(recommendation.macro_overlay) }}</div>
+                  </div>
+                  <div class="memo-stat">
+                    <div class="section-kicker">근거 패킷</div>
+                    <div class="memo-stat-value">{{ recommendation.evidence | length }} items</div>
+                  </div>
+                </div>
+                <p class="memo-mini">데이터 신뢰도 {{ "%.2f" | format(metrics.data_quality_score) }} / stale {{ metrics.stale_days }}d / {{ recommendation.rationale.source_mode }} via {{ recommendation.rationale.model_name }}</p>
+                {% if recommendation.rationale.warning %}
+                  <div class="warning-note">
+                    <div class="section-kicker">generation note</div>
+                    {{ recommendation.rationale.warning }}
+                  </div>
+                {% else %}
+                  <p class="memo-mini">생성 경고 없이 evidence 참조가 연결되어 있습니다.</p>
+                {% endif %}
+              </article>
+
+              <article class="section-shell evidence-ledger">
+                <div class="section-header">
+                  <div class="section-kicker">evidence ledger</div>
+                  <h2>문서화된 근거</h2>
+                </div>
+                {% for item in recommendation.evidence %}
+                  <div class="evidence-card{% if item.evidence_id in recommendation.rationale.evidence_refs %} is-referenced{% endif %}">
+                    <div class="evidence-meta">{{ item.evidence_id }} / {{ item.source }} / {{ item.as_of }}</div>
+                    <h3>{{ item.label }}</h3>
+                    <p class="evidence-value">{{ item.value }}</p>
+                  </div>
+                {% endfor %}
+              </article>
+            </div>
+          </section>
+
+          <div class="footer">
+            <div class="footer-grid">
+              <div class="footer-left">
+                <div class="footer-note">정보 제공용 리서치 문서 / commentary sheet</div>
+              </div>
+              <div class="footer-right">
+                <p class="footer-copy">{{ disclaimer }} 이 2페이지는 {{ recommendation.symbol }}에 대한 중립 해설, 핵심 근거, 리스크, 체크 포인트, process memo, evidence ledger, reading note를 한 장에 고정 배치한 설명 시트입니다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </article>
   {% endfor %}
 </body>
 </html>
