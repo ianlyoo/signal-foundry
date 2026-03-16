@@ -1,0 +1,3 @@
+[console_scripts]
+screener = screener.cli:main
+screener-mcp = screener.mcp_server:main

@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ title }}</title>
+  <style>
+    :root {
+      --bg: #071015;
+      --panel: #0d1a21;
+      --panel-alt: #12242d;
+      --line: #1f3945;
+      --line-strong: #31525d;
+      --text: #d7e5e2;
+      --muted: #89a7a0;
+      --accent: #f0a24b;
+      --accent-soft: rgba(240, 162, 75, 0.12);
+      --safe: #57c18b;
+      --risk: #ff8f6b;
+      --info: #73c5d8;
+      --warn: #ffd27c;
+      --shadow: rgba(0, 0, 0, 0.32);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background:
+        linear-gradient(180deg, rgba(240, 162, 75, 0.05), transparent 26%),
+        repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.02) 1px, transparent 1px, transparent 28px),
+        radial-gradient(circle at top right, rgba(115, 197, 216, 0.14), transparent 28%),
+        var(--bg);
+      color: var(--text);
+      font-family: Consolas, "Courier New", monospace;
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .shell {
+      margin: 0 auto;
+      max-width: 1360px;
+      padding: 28px 24px 40px;
+    }
+
+    .scanline {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .hero,
+    .rail,
+    .summary-card,
+    .matrix,
+    .detail-card {
+      background: linear-gradient(180deg, rgba(18, 36, 45, 0.96), rgba(10, 23, 29, 0.98));
+      border: 1px solid var(--line);
+      box-shadow: 0 18px 30px var(--shadow);
+    }
+
+    .hero {
+      overflow: hidden;
+      padding: 22px;
+      position: relative;
+    }
+
+    .hero:before {
+      background: linear-gradient(90deg, transparent, rgba(240, 162, 75, 0.2), transparent);
+      content: "";
+      height: 1px;
+      left: 0;
+      position: absolute;
+      right: 0;
+      top: 54px;
+    }
+
+    .hero-grid,
+    .summary-grid,
+    .detail-grid,
+    .evidence-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .hero-grid {
+      grid-template-columns: minmax(0, 2.3fr) minmax(280px, 1fr);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 34px;
+      letter-spacing: 0.04em;
+      margin: 10px 0 12px;
+      text-transform: uppercase;
+    }
+
+    .hero-copy {
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 70ch;
+    }
+
+    .terminal-lines {
+      margin-top: 18px;
+    }
+
+    .line {
+      align-items: baseline;
+      border-bottom: 1px dashed rgba(137, 167, 160, 0.15);
+      display: flex;
+      gap: 12px;
+      padding: 7px 0;
+    }
+
+    .prompt {
+      color: var(--accent);
+      flex: 0 0 auto;
+    }
+
+    .line-label {
+      color: var(--muted);
+      flex: 0 0 190px;
+      text-transform: uppercase;
+    }
+
+    .line-value {
+      color: var(--text);
+      min-width: 0;
+    }
+
+    .rail {
+      padding: 18px;
+    }
+
+    .rail-title,
+    .section-kicker,
+    .tiny {
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .rail-value {
+      color: var(--accent);
+      font-size: 42px;
+      line-height: 1;
+      margin: 10px 0 14px;
+    }
+
+    .nav-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .chip {
+      background: var(--accent-soft);
+      border: 1px solid rgba(240, 162, 75, 0.25);
+      color: var(--accent);
+      display: inline-block;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      padding: 7px 10px;
+      text-transform: uppercase;
+    }
+
+    .summary-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin: 18px 0;
+    }
+
+    .summary-card {
+      min-height: 126px;
+      padding: 16px;
+    }
+
+    .summary-value {
+      color: var(--text);
+      font-size: 28px;
+      margin: 12px 0 6px;
+    }
+
+    .summary-note {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .board {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: minmax(0, 1.15fr) minmax(360px, 1fr);
+      margin-bottom: 20px;
+    }
+
+    .matrix,
+    .detail-card {
+      padding: 18px;
+    }
+
+    .section-head {
+      align-items: end;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+    }
+
+    h2 {
+      font-size: 20px;
+      text-transform: uppercase;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid rgba(137, 167, 160, 0.15);
+      font-size: 13px;
+      padding: 10px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    tbody tr:hover {
+      background: rgba(115, 197, 216, 0.05);
+    }
+
+    .tag,
+    .ref,
+    .signal {
+      border: 1px solid transparent;
+      display: inline-block;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      margin: 0 6px 6px 0;
+      padding: 4px 7px;
+      text-transform: uppercase;
+    }
+
+    .tag.safe,
+    .signal.safe {
+      background: rgba(87, 193, 139, 0.12);
+      border-color: rgba(87, 193, 139, 0.3);
+      color: var(--safe);
+    }
+
+    .tag.risk,
+    .signal.risk {
+      background: rgba(255, 143, 107, 0.12);
+      border-color: rgba(255, 143, 107, 0.3);
+      color: var(--risk);
+    }
+
+    .ref {
+      background: rgba(115, 197, 216, 0.12);
+      border-color: rgba(115, 197, 216, 0.25);
+      color: var(--info);
+    }
+
+    .signal.warn {
+      background: rgba(255, 210, 124, 0.12);
+      border-color: rgba(255, 210, 124, 0.28);
+      color: var(--warn);
+    }
+
+    .score-stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .score-row {
+      display: grid;
+      gap: 4px;
+    }
+
+    .score-meta {
+      align-items: center;
+      display: flex;
+      font-size: 12px;
+      justify-content: space-between;
+    }
+
+    .track {
+      background: rgba(255, 255, 255, 0.06);
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .fill {
+      background: linear-gradient(90deg, var(--accent), #ffd27c);
+      height: 100%;
+    }
+
+    .fill.safe {
+      background: linear-gradient(90deg, #2f7a58, var(--safe));
+    }
+
+    .fill.risk {
+      background: linear-gradient(90deg, #b55439, var(--risk));
+    }
+
+    .detail-list {
+      display: grid;
+      gap: 18px;
+    }
+
+    .detail-card {
+      scroll-margin-top: 20px;
+    }
+
+    .detail-grid {
+      grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.9fr);
+      margin-top: 14px;
+    }
+
+    .detail-copy {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.65;
+      margin-top: 8px;
+    }
+
+    .bullet-list {
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.6;
+      margin: 8px 0 0;
+      padding-left: 18px;
+    }
+
+    .block + .block {
+      margin-top: 16px;
+    }
+
+    h3 {
+      font-size: 15px;
+      text-transform: uppercase;
+    }
+
+    .evidence-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 14px;
+    }
+
+    .evidence-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(137, 167, 160, 0.16);
+      padding: 12px;
+    }
+
+    .evidence-card.is-referenced {
+      border-color: rgba(240, 162, 75, 0.45);
+      box-shadow: inset 0 0 0 1px rgba(240, 162, 75, 0.16);
+    }
+
+    .evidence-value {
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.55;
+      margin: 8px 0;
+    }
+
+    .footer {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 18px;
+      text-align: right;
+    }
+
+    @media (max-width: 1080px) {
+      .hero-grid,
+      .board,
+      .detail-grid,
+      .summary-grid,
+      .evidence-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  {% set stats = namespace(safe=0, risky=0, alerts=0) %}
+  {% for recommendation in batch.recommendations %}
+    {% if recommendation.bucket.value == "safer_growth" %}
+      {% set stats.safe = stats.safe + 1 %}
+    {% else %}
+      {% set stats.risky = stats.risky + 1 %}
+    {% endif %}
+    {% if recommendation.rationale.warning %}
+      {% set stats.alerts = stats.alerts + 1 %}
+    {% endif %}
+  {% endfor %}
+
+  <div class="shell">
+    <div class="scanline">Analyst console / static run browser</div>
+
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="section-kicker">Run overview</div>
+          <h1>{{ title }}</h1>
+          <p class="hero-copy">This dashboard is a static browse surface for the batch output. It keeps ranking context, rationale provenance, evidence references, and per-name drilldowns visible in one console-style page without adding any client-side code.</p>
+
+          <div class="terminal-lines">
+            <div class="line"><span class="prompt">&gt;</span><span class="line-label">run_id</span><span class="line-value">{{ batch.run_id }}</span></div>
+            <div class="line"><span class="prompt">&gt;</span><span class="line-label">as_of</span><span class="line-value">{{ batch.as_of }}</span></div>
+            <div class="line"><span class="prompt">&gt;</span><span class="line-label">generated_at</span><span class="line-value">{{ batch.generated_at }}</span></div>
+            <div class="line"><span class="prompt">&gt;</span><span class="line-label">ranking/prompt</span><span class="line-value">{{ batch.ranking_version }} / {{ batch.prompt_version }}</span></div>
+            <div class="line"><span class="prompt">&gt;</span><span class="line-label">requested_llm</span><span class="line-value">{{ batch.requested_llm_mode }} {% if batch.requested_llm_model %}/ {{ batch.requested_llm_model }}{% endif %}</span></div>
+            <div class="line"><span class="prompt">&gt;</span><span class="line-label">rationale_sources</span><span class="line-value">{% if batch.rationale_sources %}{{ batch.rationale_sources | join(', ') }}{% else %}template{% endif %}</span></div>
+          </div>
+        </div>
+
+        <aside class="rail">
+          <div class="rail-title">Tracked names</div>
+          <div class="rail-value">{{ batch.recommendations | length }}</div>
+          <div class="tiny">Use the quick jump chips to move directly to a stock detail panel.</div>
+          <div class="nav-chips">
+            {% for recommendation in batch.recommendations %}
+              <a class="chip" href="#{{ recommendation.symbol }}">#{{ recommendation.rank }} {{ recommendation.symbol }}</a>
+            {% endfor %}
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="summary-grid">
+      <article class="summary-card">
+        <div class="tiny">Bucket split</div>
+        <div class="summary-value">{{ stats.safe }} / {{ stats.risky }}</div>
+        <div class="summary-note">Safer growth names first, higher-risk growth names second, matching the current batch ordering.</div>
+      </article>
+      <article class="summary-card">
+        <div class="tiny">Model lineage</div>
+        <div class="summary-value">{{ batch.model_version }}</div>
+        <div class="summary-note">Actual output model or fallback marker stored on the batch artifact.</div>
+      </article>
+      <article class="summary-card">
+        <div class="tiny">Generation alerts</div>
+        <div class="summary-value">{{ stats.alerts }}</div>
+        <div class="summary-note">Recommendations carrying a warning from the rationale generation step.</div>
+      </article>
+      <article class="summary-card">
+        <div class="tiny">Disclaimer id</div>
+        <div class="summary-value">{{ batch.disclaimer_id }}</div>
+        <div class="summary-note">Run metadata for the research disclaimer lineage included in artifacts.</div>
+      </article>
+    </section>
+
+    <section class="board">
+      <article class="matrix">
+        <div class="section-head">
+          <div>
+            <div class="section-kicker">Ranked matrix</div>
+            <h2>Browse the batch</h2>
+          </div>
+          <div class="tiny">Jump into the detailed panels on the right</div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Symbol</th>
+              <th>Bucket</th>
+              <th>Composite</th>
+              <th>Quality</th>
+              <th>Risk</th>
+              <th>Refs</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for recommendation in batch.recommendations %}
+              {% set bucket_class = "safe" if recommendation.bucket.value == "safer_growth" else "risk" %}
+              {% set bucket_label = "safe" if recommendation.bucket.value == "safer_growth" else "risk" %}
+              <tr>
+                <td>#{{ recommendation.rank }}</td>
+                <td>
+                  <a href="#{{ recommendation.symbol }}">
+                    <strong>{{ recommendation.symbol }}</strong><br>
+                    <span class="tiny">{{ recommendation.name }}</span>
+                  </a>
+                </td>
+                <td><span class="tag {{ bucket_class }}">{{ bucket_label }}</span></td>
+                <td>{{ "%.0f" | format(recommendation.composite_score * 100) }}</td>
+                <td>{{ "%.0f" | format(recommendation.quality_score * 100) }}</td>
+                <td>{{ "%.0f" | format(recommendation.risk_score * 100) }}</td>
+                <td>{{ recommendation.rationale.evidence_refs | length }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </article>
+
+      <article class="matrix">
+        <div class="section-head">
+          <div>
+            <div class="section-kicker">Signal bus</div>
+            <h2>How to read the run</h2>
+          </div>
+        </div>
+
+        <div class="block">
+          <h3>Interpretation</h3>
+          <p class="detail-copy">Composite, valuation, growth, quality, and risk are relative screen scores. They help compare candidates inside this batch; they are not standalone valuation claims.</p>
+        </div>
+
+        <div class="block">
+          <h3>Source flags</h3>
+          <div style="margin-top: 8px;">
+            <span class="signal safe">safe sleeve</span>
+            <span class="signal risk">risk sleeve</span>
+            <span class="signal warn">warning attached</span>
+            <span class="ref">evidence referenced</span>
+          </div>
+        </div>
+
+        <div class="block">
+          <h3>Run facts</h3>
+          <p class="detail-copy">Requested mode: {{ batch.requested_llm_mode }}{% if batch.requested_llm_model %} / {{ batch.requested_llm_model }}{% endif %}. Actual sources: {% if batch.rationale_sources %}{{ batch.rationale_sources | join(', ') }}{% else %}template{% endif %}. Each detail panel preserves rationale text, supporting lists, and the full evidence packet for auditability.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="detail-list">
+      {% for recommendation in batch.recommendations %}
+        {% set bucket_class = "safe" if recommendation.bucket.value == "safer_growth" else "risk" %}
+        {% set bucket_label = "Safer Growth" if recommendation.bucket.value == "safer_growth" else "Higher-Risk / Higher-Growth" %}
+        <article class="detail-card" id="{{ recommendation.symbol }}">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">{{ recommendation.sector }} / {{ recommendation.industry }}</div>
+              <h2>#{{ recommendation.rank }} {{ recommendation.symbol }} - {{ recommendation.name }}</h2>
+            </div>
+            <div>
+              <span class="tag {{ bucket_class }}">{{ bucket_label }}</span>
+              {% if recommendation.rationale.warning %}
+                <span class="signal warn">warning attached</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="detail-grid">
+            <div>
+              <div class="block">
+                <h3>Rationale</h3>
+                <p class="detail-copy">{{ recommendation.rationale.text }}</p>
+              </div>
+
+              <div class="block">
+                <h3>Key reasons</h3>
+                <ul class="bullet-list">
+                  {% for reason in recommendation.rationale.key_reasons %}
+                    <li>{{ reason }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+
+              <div class="block">
+                <h3>Primary risks</h3>
+                <ul class="bullet-list">
+                  {% for risk in recommendation.rationale.primary_risks %}
+                    <li>{{ risk }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+
+              <div class="block">
+                <h3>Watch items</h3>
+                <ul class="bullet-list">
+                  {% for watch_item in recommendation.rationale.watch_items %}
+                    <li>{{ watch_item }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+
+            <div>
+              <div class="block">
+                <h3>Score stack</h3>
+                <div class="score-stack" style="margin-top: 10px;">
+                  <div class="score-row">
+                    <div class="score-meta"><span>Composite</span><span>{{ "%.0f" | format(recommendation.composite_score * 100) }}</span></div>
+                    <div class="track"><div class="fill" style="width: {{ "%.0f" | format(recommendation.composite_score * 100) }}%;"></div></div>
+                  </div>
+                  <div class="score-row">
+                    <div class="score-meta"><span>Valuation</span><span>{{ "%.0f" | format(recommendation.valuation_score * 100) }}</span></div>
+                    <div class="track"><div class="fill safe" style="width: {{ "%.0f" | format(recommendation.valuation_score * 100) }}%;"></div></div>
+                  </div>
+                  <div class="score-row">
+                    <div class="score-meta"><span>Growth</span><span>{{ "%.0f" | format(recommendation.growth_score * 100) }}</span></div>
+                    <div class="track"><div class="fill" style="width: {{ "%.0f" | format(recommendation.growth_score * 100) }}%;"></div></div>
+                  </div>
+                  <div class="score-row">
+                    <div class="score-meta"><span>Quality</span><span>{{ "%.0f" | format(recommendation.quality_score * 100) }}</span></div>
+                    <div class="track"><div class="fill safe" style="width: {{ "%.0f" | format(recommendation.quality_score * 100) }}%;"></div></div>
+                  </div>
+                  <div class="score-row">
+                    <div class="score-meta"><span>Risk posture</span><span>{{ "%.0f" | format(recommendation.risk_score * 100) }}</span></div>
+                    <div class="track"><div class="fill risk" style="width: {{ "%.0f" | format(recommendation.risk_score * 100) }}%;"></div></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="block">
+                <h3>Metadata</h3>
+                <p class="detail-copy">Selection tier: {{ recommendation.selection_tier }}. Rationale source: {{ recommendation.rationale.source_mode }} via {{ recommendation.rationale.model_name }}. Macro overlay: {{ "%.2f" | format(recommendation.macro_overlay) }}.</p>
+                <div style="margin-top: 10px;">
+                  {% for ref in recommendation.rationale.evidence_refs %}
+                    <span class="ref">{{ ref }}</span>
+                  {% endfor %}
+                </div>
+                {% if recommendation.rationale.warning %}
+                  <p class="detail-copy">Warning: {{ recommendation.rationale.warning }}</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div class="evidence-grid">
+            {% for item in recommendation.evidence %}
+              <div class="evidence-card{% if item.evidence_id in recommendation.rationale.evidence_refs %} is-referenced{% endif %}">
+                <div class="tiny">{{ item.evidence_id }}</div>
+                <h3 style="margin-top: 6px;">{{ item.label }}</h3>
+                <p class="evidence-value">{{ item.value }}</p>
+                <div class="tiny">{{ item.source }} / {{ item.as_of }}</div>
+              </div>
+            {% endfor %}
+          </div>
+        </article>
+      {% endfor %}
+    </section>
+
+    <div class="footer">Static HTML dashboard generated from local batch data only.</div>
+  </div>
+</body>
+</html>

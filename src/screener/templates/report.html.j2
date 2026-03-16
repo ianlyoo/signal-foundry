@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>{{ title }}</title>
+  <style>
+    :root {
+      --font-korean-sans: "Noto Sans CJK KR Embedded", "Noto Sans CJK KR", "Source Han Sans K", sans-serif;
+      --font-korean-serif: "Noto Sans CJK KR Embedded", "Noto Sans CJK KR", "Source Han Sans K", sans-serif;
+      --paper: #f4efe6;
+      --sheet: #fffdf8;
+      --ink: #1c2430;
+      --muted: #64707f;
+      --line: #d8cdbb;
+      --line-strong: #bca987;
+      --panel: #f8f2e8;
+      --accent: #b65c27;
+      --accent-soft: #ead8c6;
+      --safe: #285f4a;
+      --risk: #9a4b30;
+      --positive: #2f6b4f;
+      --negative: #8b3b2a;
+      --neutral: #8a744f;
+      --shadow: rgba(28, 36, 48, 0.08);
+    }
+
+    @font-face {
+      font-family: "Noto Sans CJK KR Embedded";
+      font-style: normal;
+      font-weight: 400;
+      src: url("{{ font_base_uri }}/fonts/NotoSansCJKkr-Regular.otf") format("opentype");
+    }
+
+    @font-face {
+      font-family: "Noto Sans CJK KR Embedded";
+      font-style: normal;
+      font-weight: 700;
+      src: url("{{ font_base_uri }}/fonts/NotoSansCJKkr-Bold.otf") format("opentype");
+    }
+
+    @page {
+      size: A4;
+      margin: 11mm;
+    }
+
+    * {
+      box-sizing: border-box;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--font-korean-serif);
+      font-size: 10px;
+      line-height: 1.38;
+    }
+
+    .report-page {
+      break-before: page;
+      page-break-before: always;
+      padding: 0;
+    }
+
+    .report-page:first-of-type {
+      break-before: auto;
+      page-break-before: auto;
+    }
+
+    .report-block {
+      background: var(--sheet);
+      border: 1px solid var(--line);
+      box-shadow: 0 10px 22px var(--shadow);
+      margin-bottom: 7px;
+      padding: 8.5mm;
+    }
+
+    .report-block.compact {
+      padding-bottom: 7mm;
+      padding-top: 7mm;
+    }
+
+    .eyebrow,
+    .meta-label,
+    .panel-kicker,
+    .mini-label,
+    .evidence-meta,
+    .footer-note {
+      font-family: var(--font-korean-sans);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-size: 8px;
+      margin-bottom: 4px;
+    }
+
+    .header {
+      border-bottom: 2px solid var(--line-strong);
+      break-inside: avoid;
+      margin-bottom: 8px;
+      page-break-inside: avoid;
+      padding-bottom: 8px;
+    }
+
+    .header-main,
+    .metrics-strip,
+    .dual-column,
+    .evidence-grid {
+      font-size: 0;
+    }
+
+    .title-block,
+    .score-block,
+    .metric-card,
+    .column,
+    .evidence-card {
+      display: inline-block;
+      font-size: 10px;
+      vertical-align: top;
+    }
+
+    .title-block {
+      padding-right: 10px;
+      width: 66%;
+    }
+
+    .score-block {
+      width: 34%;
+    }
+
+    .rank-chip {
+      background: var(--ink);
+      border-radius: 999px;
+      color: #fff;
+      display: inline-block;
+      font-family: var(--font-korean-sans);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+      padding: 4px 10px;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 24px;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .company-name {
+      color: var(--muted);
+      display: block;
+      font-size: 13px;
+      font-style: italic;
+      margin-top: 4px;
+    }
+
+    .lede {
+      color: var(--ink);
+      font-size: 11px;
+      margin-top: 8px;
+    }
+
+    .header-meta {
+      margin-top: 8px;
+    }
+
+    .meta-item {
+      border-left: 3px solid var(--accent-soft);
+      display: inline-block;
+      margin: 0 10px 6px 0;
+      padding: 0 0 0 8px;
+      vertical-align: top;
+    }
+
+    .meta-label {
+      color: var(--muted);
+      font-size: 7px;
+      margin-bottom: 2px;
+    }
+
+    .meta-value {
+      font-size: 10px;
+    }
+
+    .score-shell {
+      background: linear-gradient(180deg, var(--panel), #f2e7d8);
+      border: 1px solid var(--line-strong);
+      padding: 10px;
+    }
+
+    .score-title {
+      color: var(--muted);
+      font-family: var(--font-korean-sans);
+      font-size: 8px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .score-number {
+      color: var(--ink);
+      font-size: 34px;
+      line-height: 0.95;
+      margin: 6px 0 4px;
+    }
+
+    .score-subtitle {
+      color: var(--muted);
+      font-size: 9px;
+      margin-bottom: 8px;
+    }
+
+    .score-row {
+      margin-top: 7px;
+    }
+
+    .score-row-head {
+      margin-bottom: 3px;
+    }
+
+    .score-name {
+      color: var(--ink);
+      display: inline-block;
+      font-family: var(--font-korean-sans);
+      font-size: 8px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      width: 66%;
+    }
+
+    .score-value {
+      color: var(--muted);
+      display: inline-block;
+      font-size: 8px;
+      text-align: right;
+      width: 34%;
+    }
+
+    .score-track {
+      background: #e4d8c7;
+      height: 7px;
+      overflow: hidden;
+    }
+
+    .score-fill {
+      background: var(--accent);
+      height: 100%;
+    }
+
+    .score-fill.safe {
+      background: var(--safe);
+    }
+
+    .score-fill.risk {
+      background: var(--risk);
+    }
+
+    .score-fill.neutral {
+      background: var(--neutral);
+    }
+
+    .metrics-strip {
+      break-inside: avoid;
+      margin-bottom: 8px;
+      page-break-inside: avoid;
+    }
+
+    .metric-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      margin: 0 1% 6px 0;
+      min-height: 56px;
+      padding: 7px 8px;
+      width: 24.25%;
+    }
+
+    .metric-card:nth-child(4n) {
+      margin-right: 0;
+    }
+
+    .mini-label {
+      color: var(--muted);
+      font-size: 7px;
+      margin-bottom: 4px;
+    }
+
+    .metric-value {
+      font-size: 16px;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .metric-note {
+      color: var(--muted);
+      font-size: 8px;
+    }
+
+    .column {
+      width: 49%;
+    }
+
+    .column + .column {
+      margin-left: 2%;
+    }
+
+    .panel {
+      border-top: 2px solid var(--line-strong);
+      margin-bottom: 8px;
+      padding-top: 5px;
+    }
+
+    .panel-kicker {
+      color: var(--accent);
+      font-size: 7px;
+      margin-bottom: 2px;
+    }
+
+    h2 {
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .analysis-copy,
+    .support-copy {
+      margin-bottom: 5px;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 16px;
+    }
+
+    li {
+      margin-bottom: 4px;
+    }
+
+    .badge-row {
+      margin-top: 5px;
+    }
+
+    .badge {
+      background: var(--accent-soft);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      display: inline-block;
+      font-family: var(--font-korean-sans);
+      font-size: 7px;
+      letter-spacing: 0.08em;
+      margin: 0 4px 4px 0;
+      padding: 3px 6px;
+      text-transform: uppercase;
+    }
+
+    .badge.safe {
+      background: #e1eee8;
+      border-color: #b7d0c5;
+      color: var(--safe);
+    }
+
+    .badge.risk {
+      background: #f2dfd7;
+      border-color: #e0b8a9;
+      color: var(--risk);
+    }
+
+    .badge.alert {
+      background: #f5dfd7;
+      border-color: #e4baa8;
+      color: var(--negative);
+    }
+
+    .evidence-grid {
+      margin-top: 6px;
+    }
+
+    .evidence-card {
+      background: #fffaf2;
+      border: 1px solid var(--line);
+      break-inside: avoid;
+      margin: 0 2% 6px 0;
+      page-break-inside: avoid;
+      padding: 7px 8px;
+      width: 49%;
+    }
+
+    .evidence-card:nth-child(2n) {
+      margin-right: 0;
+    }
+
+    .evidence-card.is-referenced {
+      border-color: var(--accent);
+      box-shadow: inset 0 0 0 1px var(--accent-soft);
+    }
+
+    h3 {
+      font-size: 10px;
+      margin-bottom: 4px;
+    }
+
+    .evidence-value {
+      margin-bottom: 5px;
+    }
+
+    .evidence-meta {
+      color: var(--muted);
+      font-size: 7px;
+    }
+
+    .footer {
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      break-inside: avoid;
+      margin-top: 8px;
+      page-break-inside: avoid;
+      padding-top: 6px;
+    }
+
+    @media print {
+      body {
+        background: #fff;
+        font-size: 9.5px;
+        line-height: 1.34;
+      }
+
+      .report-block {
+        box-shadow: none;
+        margin-bottom: 6px;
+        padding: 7.5mm 8mm 6.5mm;
+      }
+
+      .header-main,
+      .metrics-strip,
+      .dual-column,
+      .evidence-grid {
+        font-size: 0;
+      }
+
+      .report-page {
+        break-before: page;
+        page-break-before: always;
+      }
+
+      .report-page:first-of-type {
+        break-before: auto;
+        page-break-before: auto;
+      }
+
+      .metric-card {
+        min-height: 50px;
+        padding: 6px 7px;
+      }
+    }
+
+    .footer-note {
+      font-size: 7px;
+      margin-bottom: 3px;
+    }
+
+    .footer-copy {
+      font-size: 8px;
+    }
+  </style>
+</head>
+<body>
+  {% for recommendation in batch.recommendations %}
+    {% set bucket_label = "안정 성장" if recommendation.bucket.value == "safer_growth" else "고위험 / 고성장" %}
+    {% set bucket_class = "safe" if recommendation.bucket.value == "safer_growth" else "risk" %}
+    <section class="report-page">
+      <div class="report-block">
+      <div class="header">
+        <div class="eyebrow">Screener 분석 문서</div>
+        <div class="header-main">
+          <div class="title-block">
+            <div class="rank-chip">{{ batch.recommendations | length }}개 중 {{ recommendation.rank }}위</div>
+            <h1>
+              {{ recommendation.symbol }}
+              <span class="company-name">{{ recommendation.name }}</span>
+            </h1>
+            <p class="lede">{{ recommendation.rationale.text }}</p>
+            <div class="header-meta">
+              <div class="meta-item">
+                  <div class="meta-label">버킷</div>
+                <div class="meta-value">{{ bucket_label }}</div>
+              </div>
+              <div class="meta-item">
+                  <div class="meta-label">커버리지</div>
+                <div class="meta-value">{{ recommendation.sector }} / {{ recommendation.industry }}</div>
+              </div>
+              <div class="meta-item">
+                  <div class="meta-label">문안 출처</div>
+                  <div class="meta-value">{{ recommendation.rationale.source_mode }} / {{ recommendation.rationale.model_name }}</div>
+              </div>
+              <div class="meta-item">
+                  <div class="meta-label">실행 정보</div>
+                  <div class="meta-value">{{ batch.run_id }} / {{ batch.as_of }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="score-block">
+            <div class="score-shell">
+              <div class="score-title">종합 스크린 점수</div>
+              <div class="score-number">{{ "%.0f" | format(recommendation.composite_score * 100) }}</div>
+              <div class="score-subtitle">현재 스크린 내부 상대 점수이며 목표주가가 아닙니다.</div>
+
+              <div class="score-row">
+                <div class="score-row-head">
+                  <span class="score-name">밸류에이션</span>
+                  <span class="score-value">{{ "%.0f" | format(recommendation.valuation_score * 100) }}</span>
+                </div>
+                <div class="score-track"><div class="score-fill safe" style="width: {{ "%.0f" | format(recommendation.valuation_score * 100) }}%;"></div></div>
+              </div>
+              <div class="score-row">
+                <div class="score-row-head">
+                  <span class="score-name">성장성</span>
+                  <span class="score-value">{{ "%.0f" | format(recommendation.growth_score * 100) }}</span>
+                </div>
+                <div class="score-track"><div class="score-fill" style="width: {{ "%.0f" | format(recommendation.growth_score * 100) }}%;"></div></div>
+              </div>
+              <div class="score-row">
+                <div class="score-row-head">
+                  <span class="score-name">퀄리티</span>
+                  <span class="score-value">{{ "%.0f" | format(recommendation.quality_score * 100) }}</span>
+                </div>
+                <div class="score-track"><div class="score-fill safe" style="width: {{ "%.0f" | format(recommendation.quality_score * 100) }}%;"></div></div>
+              </div>
+              <div class="score-row">
+                <div class="score-row-head">
+                  <span class="score-name">리스크</span>
+                  <span class="score-value">{{ "%.0f" | format(recommendation.risk_score * 100) }}</span>
+                </div>
+                <div class="score-track"><div class="score-fill risk" style="width: {{ "%.0f" | format(recommendation.risk_score * 100) }}%;"></div></div>
+              </div>
+              <div class="score-row">
+                <div class="score-row-head">
+                  <span class="score-name">매크로 반영</span>
+                  <span class="score-value">{{ "%.2f" | format(recommendation.macro_overlay) }}</span>
+                </div>
+                <div class="score-track"><div class="score-fill neutral" style="width: {{ "%.0f" | format((recommendation.macro_overlay + 0.2) * 250) }}%;"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="metrics-strip">
+          <div class="metric-card">
+          <div class="mini-label">선정 등급</div>
+          <div class="metric-value">{{ recommendation.selection_tier }}</div>
+          <div class="metric-note">현재 규칙셋 기준에서 별도 수동 보정 없이 통과한 종목입니다.</div>
+        </div>
+        <div class="metric-card">
+          <div class="mini-label">근거 패킷 수</div>
+          <div class="metric-value">{{ recommendation.evidence | length }}</div>
+          <div class="metric-note">문안과 수치 근거를 교차 검증할 수 있는 구조화 데이터입니다.</div>
+        </div>
+        <div class="metric-card">
+          <div class="mini-label">문안 참조 수</div>
+          <div class="metric-value">{{ recommendation.rationale.evidence_refs | length }}</div>
+          <div class="metric-note">문안이 직접 참조한 evidence id 개수입니다.</div>
+        </div>
+        <div class="metric-card">
+          <div class="mini-label">프롬프트 계보</div>
+          <div class="metric-value">{{ batch.prompt_version }}</div>
+          <div class="metric-note">랭킹 {{ batch.ranking_version }} / 모델 {{ batch.model_version }}</div>
+        </div>
+      </div>
+      </div>
+
+      <div class="report-block">
+      <div class="dual-column">
+        <div class="column">
+          <div class="panel">
+            <div class="panel-kicker">중립 해설</div>
+            <h2>스크린 해석</h2>
+            <p class="analysis-copy">{{ recommendation.symbol }}은(는) {{ bucket_label }} 구간에서 종합 점수 {{ "%.4f" | format(recommendation.composite_score) }}를 기록했습니다. 이 스크린은 단일 지표보다 상대 밸류에이션, 성장 지속성, 퀄리티, 하방 방어력을 함께 반영합니다.</p>
+            <p class="support-copy">문안은 {{ recommendation.rationale.source_mode }} 출력과 {{ recommendation.evidence | length }}개의 evidence 항목을 바탕으로 구성되어, 과도한 전망보다 검증 가능한 신호 중심으로 읽히도록 설계했습니다.</p>
+            <div class="badge-row">
+              <span class="badge {{ bucket_class }}">{{ bucket_label }}</span>
+              <span class="badge">{{ recommendation.sector }}</span>
+              <span class="badge">{{ recommendation.industry }}</span>
+              <span class="badge">{{ recommendation.rationale.source_mode }}</span>
+              {% if recommendation.rationale.warning %}
+                <span class="badge alert">대체 문안 포함</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-kicker">점수 해석</div>
+            <h2>강점 균형</h2>
+            <p class="analysis-copy">상대 점수 기준으로 밸류에이션 {{ "%.0f" | format(recommendation.valuation_score * 100) }}, 성장 {{ "%.0f" | format(recommendation.growth_score * 100) }}, 퀄리티 {{ "%.0f" | format(recommendation.quality_score * 100) }}, 리스크 {{ "%.0f" | format(recommendation.risk_score * 100) }}를 기록했습니다. 이 조합은 왜 해당 종목이 상위에 올랐는지, 그리고 어떤 부분에서 실행 지속성이 중요한지를 보여줍니다.</p>
+            <p class="support-copy">매크로 반영치는 {{ "%.2f" | format(recommendation.macro_overlay) }}이며, {% if recommendation.macro_overlay > 0 %}현재 거시 환경이 소폭 우호적으로 작용하고{% elif recommendation.macro_overlay < 0 %}현재 거시 환경이 일부 부담으로 작용하고{% else %}매크로 영향이 중립적입니다{% endif %}. 이 값은 배치 내부 비교를 돕기 위한 보조 신호입니다.</p>
+          </div>
+
+          <div class="panel">
+            <div class="panel-kicker">선정 근거</div>
+            <h2>핵심 포인트</h2>
+            <ul>
+              {% for reason in recommendation.rationale.key_reasons %}
+                <li>{{ reason }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="panel">
+            <div class="panel-kicker">리스크 점검</div>
+            <h2>주요 리스크</h2>
+            <ul>
+              {% for risk in recommendation.rationale.primary_risks %}
+                <li>{{ risk }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          <div class="panel">
+            <div class="panel-kicker">모니터링 계획</div>
+            <h2>체크 포인트</h2>
+            <ul>
+              {% for watch_item in recommendation.rationale.watch_items %}
+                <li>{{ watch_item }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          <div class="panel">
+            <div class="panel-kicker">프로세스 메모</div>
+            <h2>근거 사용 내역</h2>
+            <p class="analysis-copy">이 페이지에서 직접 참조한 evidence: {% for ref in recommendation.rationale.evidence_refs %}<span class="badge">{{ ref }}</span>{% endfor %}</p>
+            {% if recommendation.rationale.warning %}
+              <p class="support-copy"><strong>생성 메모:</strong> {{ recommendation.rationale.warning }}</p>
+            {% else %}
+              <p class="support-copy">생성 경고는 없습니다. 아래 evidence ledger를 통해 문안과 수치 근거를 직접 대조할 수 있습니다.</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      </div>
+
+      <div class="report-block">
+      <div class="panel" style="margin-bottom: 0;">
+        <div class="panel-kicker">evidence ledger</div>
+        <h2>문서화된 근거</h2>
+        <div class="evidence-grid">
+          {% for item in recommendation.evidence %}
+            <div class="evidence-card{% if item.evidence_id in recommendation.rationale.evidence_refs %} is-referenced{% endif %}">
+              <h3>{{ item.label }}</h3>
+              <p class="evidence-value">{{ item.value }}</p>
+              <div class="evidence-meta">{{ item.evidence_id }} / {{ item.source }} / {{ item.as_of }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      </div>
+
+      <div class="report-block compact">
+      <div class="footer" style="margin-top: 0;">
+        <div class="footer-note">정보 제공용 리서치 문서</div>
+        <p class="footer-copy">{{ disclaimer }} 이 페이지는 {{ batch.run_id }} 실행에서 생성된 {{ recommendation.symbol }} 결과를 정적으로 정리한 문서입니다.</p>
+      </div>
+      </div>
+    </section>
+  {% endfor %}
+</body>
+</html>
