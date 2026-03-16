@@ -37,5 +37,12 @@ testpaths = ["tests"]
 [tool.setuptools]
 package-dir = {"" = "src"}
 
+[tool.setuptools.package-data]
+screener = [
+  "py.typed",
+  "templates/*.j2",
+  "templates/fonts/*.otf",
+]
+
 [tool.setuptools.packages.find]
 where = ["src"]

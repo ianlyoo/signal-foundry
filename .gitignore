@@ -15,5 +15,7 @@ out/
 data/cache/
 .sisyphus/
 HANDOFF.md
+build/
+dist/
 
 .DS_Store
