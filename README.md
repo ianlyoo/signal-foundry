@@ -1,58 +1,37 @@
 # Signal Foundry
 
-Signal Foundry는 주식 스크리닝 결과를 PDF 중심 리서치 패킷으로 만들어 주는 엔진입니다. 필요할 때만 대시보드/HTML/JSON 데이터 산출물을 함께 남기고, AI 에이전트용 MCP 인터페이스도 별도로 제공합니다.
+> 주식 스크리닝 결과를 PDF 중심 리서치 패킷으로 만드는 엔진
 
-## 한눈에 보기
+[English](README.en.md) · [MIT License](LICENSE) · Python 3.11+
 
-- 사람 사용 기본값: `pdf_only`
-- 검토용 대시보드: `full`
-- 에이전트/파이프라인 연동: `data_only` 또는 `screener-mcp`
+주식을 스크리닝하고 나면 결과를 사람이 읽을 리포트로 정리하는 일과, 다른 에이전트가
+소비할 구조화 데이터로 넘기는 일이 갈린다. Signal Foundry는 **같은 파이프라인에서
+사람에겐 PDF를, 에이전트에겐 MCP를** 내보낸다.
 
-## 설치
+**두 진입점이 같은 스크리닝·스코어링·근거 파이프라인을 공유한다.** 필요할 때만
+대시보드/HTML/JSON 산출물을 함께 남긴다.
 
-### 1) 가상환경 생성
+## 아키텍처
 
-macOS / Linux:
+```mermaid
+flowchart LR
+    A[프로바이더<br/>FMP · SEC · FRED] --> B[pipeline]
+    B --> C[scoring]
+    C --> D[reporting]
+    D --> E{artifact 모드}
+    E -- "pdf_only / full" --> F[PDF · 대시보드]
+    E -- "data_only" --> G[구조화 JSON]
+    H[CLI · MCP] --> B
+```
+
+## 빠른 시작
 
 ```bash
 python3 -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate            # Windows: .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 pip install -e .[dev]
 ```
-
-Windows PowerShell:
-
-```powershell
-py -3.11 -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-pip install -e .[dev]
-```
-
-Windows CMD:
-
-```bat
-py -3.11 -m venv .venv
-.venv\Scripts\activate.bat
-python -m pip install --upgrade pip
-pip install -e .[dev]
-```
-
-## 환경 변수
-
-`.env.example`을 복사해 `.env`를 만들고 필요한 값을 채우면 됩니다.
-
-필수/선택 항목은 다음과 같습니다.
-
-- `SCREENER_FMP_API_KEY`: live 모드 종목/재무 데이터
-- `SCREENER_FRED_API_KEY`: 거시 데이터
-- `SCREENER_SEC_USER_AGENT`: SEC 직접 조회 시 식별 헤더
-- `SCREENER_SEC_API_KEY`: SEC 대체 filing freshness 소스
-- `SCREENER_GEMINI_API_KEY`: Gemini 문안 생성
-- `SCREENER_OPENAI_API_KEY`: OpenAI 문안 생성
-
-## 빠른 시작
 
 오프라인 fixture로 PDF만 생성:
 
@@ -64,122 +43,84 @@ python -m screener.cli run \
   --artifact-mode pdf_only
 ```
 
-생성 결과:
+생성 결과: `out/demo/report.pdf`, `out/demo/run_manifest.json`
 
-- `out/demo/report.pdf`
-- `out/demo/run_manifest.json`
+## 진입점
+
+패키지는 두 진입점을 설치한다.
+
+| 명령 | 용도 |
+|---|---|
+| `screener` | CLI. 사람/운영자용 |
+| `screener-mcp` | 얇은 MCP 서버. 다른 에이전트용 |
+
+## Artifact 모드
+
+| 모드 | 대상 | 남는 파일 |
+|---|---|---|
+| `pdf_only` (기본) | 사람 | `report.pdf`, `run_manifest.json` |
+| `full` | 검토 | PDF + HTML/Markdown/`dashboard.html` + JSON 데이터 |
+| `data_only` | 에이전트·파이프라인 | `input_snapshot.json`, `recommendations.json`, `evidence_packets.json`, `run_manifest.json` |
 
 ## 실행 모드
 
 - `offline`: 준비된 snapshot JSON으로 실행
-- `live`: FMP / SEC(sec-api fallback) / FRED를 사용해 실데이터로 실행
-
-예시:
+- `live`: FMP / SEC(sec-api fallback) / FRED로 실데이터 실행
 
 ```bash
 python -m screener.cli run --mode live --output-dir out/live --artifact-mode pdf_only
 ```
 
-FMP `company-screener` endpoint를 쓰기 어려운 플랜이면 내장 종목 바스켓으로 fallback합니다. 직접 유니버스를 지정하려면:
-
-```bash
-python -m screener.cli run --mode live --symbols-file symbols.txt --output-dir out/live --artifact-mode pdf_only
-```
-
-## Artifact Mode
-
-### `pdf_only`
-
-최종 리포트만 필요할 때 쓰는 기본 모드입니다.
-
-- 남는 파일: `report.pdf`, `run_manifest.json`
-
-### `full`
-
-대시보드, HTML, 마크다운, 데이터 산출물까지 전부 보고 싶을 때 씁니다.
-
-- 남는 파일: PDF + HTML/Markdown/dashboard + JSON 데이터
-
-```bash
-python -m screener.cli run \
-  --mode offline \
-  --input tests/fixtures/base_snapshot.json \
-  --output-dir out/full \
-  --artifact-mode full
-```
-
-이 모드에서는 `out/full/dashboard.html`을 브라우저에서 열어 확인할 수 있습니다.
-
-### `data_only`
-
-에이전트, 후처리 파이프라인, 분석 스크립트용 구조화 데이터만 남깁니다.
-
-- 남는 파일: `input_snapshot.json`, `recommendations.json`, `evidence_packets.json`, `run_manifest.json`
+FMP `company-screener` endpoint를 쓰기 어려운 플랜이면 내장 종목 바스켓으로 fallback한다.
+유니버스를 직접 지정하려면 `--symbols-file symbols.txt`를 준다.
 
 ## AI 문안 생성
 
-- `--llm-mode disabled`: 템플릿 기반 문안
-- `--llm-mode gemini`: Gemini 사용
-- `--llm-mode openai`: OpenAI 사용
+`--llm-mode disabled`(템플릿) / `gemini` / `openai` 중 선택한다.
 
-예시:
-
-```bash
-python -m screener.cli run \
-  --mode offline \
-  --input tests/fixtures/base_snapshot.json \
-  --output-dir out/gemini \
-  --llm-mode gemini \
-  --artifact-mode pdf_only
-```
-
-## MCP 사용
-
-이 프로젝트는 얇은 MCP 서버 엔트리포인트를 포함합니다.
+## MCP 도구
 
 ```bash
 screener-mcp
 ```
 
-제공 도구:
+| 도구 | 반환 |
+|---|---|
+| `run_report` | PDF 리포트 경로와 manifest 경로 (PDF 우선) |
+| `run_data` | manifest, 추천 결과, evidence packet (구조화 데이터) |
 
-- `run_report`: PDF 우선 도구. 기본적으로 PDF 리포트 경로와 manifest 경로를 반환
-- `run_data`: 구조화 데이터 도구. manifest, 추천 결과, evidence packet을 반환
+권장 사용: 사람/운영자는 CLI + `pdf_only`, 다른 에이전트는 MCP `run_report`, 데이터 파이프라인은 MCP `run_data`.
 
-권장 사용 방식:
+## 설정 레퍼런스
 
-- 사람/운영자: CLI + `pdf_only`
-- 다른 에이전트: MCP `run_report`
-- 데이터 파이프라인/분석: MCP `run_data`
+`.env.example`을 복사해 `.env`를 만들고 필요한 값을 채운다. 전부 선택 사항이며 `live`/LLM 모드에서만 필요하다.
 
-## 테스트 및 점검
-
-```bash
-python -m basedpyright
-pytest
-```
+| 환경변수 | 설명 |
+|---|---|
+| `SCREENER_FMP_API_KEY` | live 종목/재무 데이터 |
+| `SCREENER_FRED_API_KEY` | 거시 데이터 |
+| `SCREENER_SEC_USER_AGENT` | SEC 직접 조회 식별 헤더 |
+| `SCREENER_SEC_API_KEY` | SEC 대체 filing freshness 소스 |
+| `SCREENER_GEMINI_API_KEY` | Gemini 문안 생성 |
+| `SCREENER_OPENAI_API_KEY` | OpenAI 문안 생성 |
 
 ## Windows PDF 런타임
 
-Windows에서는 WeasyPrint 외에도 GTK/Pango/FontConfig 런타임이 필요합니다.
+Windows에서는 WeasyPrint 외에 GTK/Pango/FontConfig 런타임이 필요하다 (MSYS2 권장).
+런타임 DLL 경로를 직접 지정하려면 `SCREENER_PDF_WINDOWS_DLL_DIRECTORIES`에 넣는다
+(예: `C:\msys64\ucrt64\bin`).
 
-PowerShell 예시:
+## 개발
 
-```powershell
-winget install -e --id MSYS2.MSYS2 --accept-package-agreements --accept-source-agreements
-C:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm mingw-w64-ucrt-x86_64-pango mingw-w64-ucrt-x86_64-cairo mingw-w64-ucrt-x86_64-fontconfig"
+```bash
+python -m basedpyright   # 타입 체크
+pytest                   # 테스트
 ```
 
-런타임 DLL 경로를 직접 지정하려면:
+## Disclaimer
 
-PowerShell:
+모든 출력은 투자 판단 보조용 데이터이며 매매 권고가 아니다.
 
-```powershell
-$env:SCREENER_PDF_WINDOWS_DLL_DIRECTORIES = "C:\msys64\ucrt64\bin"
-```
+## License
 
-CMD:
-
-```bat
-set SCREENER_PDF_WINDOWS_DLL_DIRECTORIES=C:\msys64\ucrt64\bin
-```
+[MIT](LICENSE) © 2026 AhnRyu
