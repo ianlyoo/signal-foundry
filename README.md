@@ -1,126 +1,114 @@
-# Signal Foundry
+# Screener
 
-> 주식 스크리닝 결과를 PDF 중심 리서치 패킷으로 만드는 엔진
+Batch stock screener MVP with deterministic ranking, evidence packets, AI-ready rationale generation, and Markdown/HTML/PDF outputs. Reframed as a **RAG-like retrieval → reranking → grounding** pipeline over tabular fundamentals.
 
-[English](README.en.md) · [MIT License](LICENSE) · Python 3.11+
+## Why I built this
 
-주식을 스크리닝하고 나면 결과를 사람이 읽을 리포트로 정리하는 일과, 다른 에이전트가
-소비할 구조화 데이터로 넘기는 일이 갈린다. Signal Foundry는 **같은 파이프라인에서
-사람에겐 PDF를, 에이전트에겐 MCP를** 내보낸다.
+Screening hundreds of tickers by hand is slow and inconsistent — every decision needs the same evidence and an auditable reason.
+This pipeline automates the boring middle: retrieve a snapshot, rerank by rules, attach evidence, and generate only grounded text.
+Deterministic scoring stays the source of truth so LLM output can explain, never invent.
 
-**두 진입점이 같은 스크리닝·스코어링·근거 파이프라인을 공유한다.** 필요할 때만
-대시보드/HTML/JSON 산출물을 함께 남긴다.
+## Highlights
 
-## 아키텍처
+- **Deterministic scoring (reranking):** `scoring.py` normalizes valuation/growth/quality/risk across the snapshot and applies a macro overlay before `select_top_six()` picks 3+3 (safer_growth / higher_risk_higher_growth).
+- **Evidence packet:** `evidence.py:build_evidence()` emits 5 typed `EvidenceItem`s per pick (valuation, growth, quality, risk, macro) with `as_of` and `source`.
+- **Grounded generation:** `rationale.py:generate_rationale()` calls OpenAI/Gemini only with the evidence blob, falls back to a deterministic template, and records `source_mode`/`model_name`.
+- **Offline fixture:** `tests/fixtures/base_snapshot.json` lets the full pipeline run without network — `pytest -q` and `python -m screener.cli run --mode offline` both work offline.
+
+## Architecture — RAG-like pipeline
+
+> `provider → retrieval → reranking/scoring → evidence → grounded generation → validation → reporting`
 
 ```mermaid
 flowchart LR
-    A[프로바이더<br/>FMP · SEC · FRED] --> B[pipeline]
-    B --> C[scoring]
-    C --> D[reporting]
-    D --> E{artifact 모드}
-    E -- "pdf_only / full" --> F[PDF · 대시보드]
-    E -- "data_only" --> G[구조화 JSON]
-    H[CLI · MCP] --> B
+    A[provider] --> B[retrieval] --> C[reranking/scoring] --> D[evidence] --> E[grounded generation] --> F[validation] --> G[reporting]
 ```
 
-## 빠른 시작
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate            # Windows: .\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-pip install -e .[dev]
-```
-
-오프라인 fixture로 PDF만 생성:
-
-```bash
-python -m screener.cli run \
-  --mode offline \
-  --input tests/fixtures/base_snapshot.json \
-  --output-dir out/demo \
-  --artifact-mode pdf_only
-```
-
-생성 결과: `out/demo/report.pdf`, `out/demo/run_manifest.json`
-
-## 진입점
-
-패키지는 두 진입점을 설치한다.
-
-| 명령 | 용도 |
-|---|---|
-| `screener` | CLI. 사람/운영자용 |
-| `screener-mcp` | 얇은 MCP 서버. 다른 에이전트용 |
-
-## Artifact 모드
-
-| 모드 | 대상 | 남는 파일 |
+| RAG 5-stage | Screener mapping | File |
 |---|---|---|
-| `pdf_only` (기본) | 사람 | `report.pdf`, `run_manifest.json` |
-| `full` | 검토 | PDF + HTML/Markdown/`dashboard.html` + JSON 데이터 |
-| `data_only` | 에이전트·파이프라인 | `input_snapshot.json`, `recommendations.json`, `evidence_packets.json`, `run_manifest.json` |
+| Ingest / Provider | FMP + SEC + FRED → `InputSnapshot` (or offline fixture) | `providers/live_snapshot.py`, `io.py` |
+| Retrieval | **RAG-like tabular retrieval** — load snapshot rows for the as-of date (no vector DB) | `pipeline.py:run_offline/run_live`, `io.py:load_snapshot` |
+| Reranking | Normalize + weight + macro overlay → composite score → sector-capped Top-6 | `scoring.py:score_snapshot`, `select_top_six` |
+| Evidence | Build 5 evidence items per pick as the only context for generation | `evidence.py:build_evidence` |
+| Grounded generation | Evidence-only prompt → JSON rationale (`text`, `key_reasons`, `primary_risks`, `watch_items`, `evidence_refs`) | `rationale.py:generate_rationale` |
+| Validation | **Citation validation** via `validate_grounding()` — every `evidence_refs` must exist in `evidence` | `rationale.py:validate_grounding` |
+| Reporting | Markdown / HTML / PDF + `evidence_packets.json` + `run_manifest.json` | `pipeline.py:write_artifacts`, `reporting.py` |
 
-## 실행 모드
+### RAG-like tabular retrieval (honest scope)
 
-- `offline`: 준비된 snapshot JSON으로 실행
-- `live`: FMP / SEC(sec-api fallback) / FRED로 실데이터 실행
+This project is **RAG-like, not vector RAG**. There is no embedding index, no vector database, and no ANN search. Retrieval is a deterministic load of a typed `InputSnapshot` table (snapshot JSON or live-built snapshot) — the same role a retriever plays in RAG, but over structured rows instead of vectors. That keeps the demo fully offline and reproducible via `tests/fixtures/base_snapshot.json`.
 
-```bash
-python -m screener.cli run --mode live --output-dir out/live --artifact-mode pdf_only
-```
+### Citation validation — `validate_grounding()`
 
-FMP `company-screener` endpoint를 쓰기 어려운 플랜이면 내장 종목 바스켓으로 fallback한다.
-유니버스를 직접 지정하려면 `--symbols-file symbols.txt`를 준다.
+`rationale.py:validate_grounding()` is the pipeline's citation check: given a `Recommendation`, it asserts `set(rationale.evidence_refs) ⊆ {e.evidence_id for e in evidence}` and raises `ValueError` on any unsupported ref. LLM callers (`_call_openai`, `_call_gemini`) run the same subset check before returning, so even a model that hallucinates an ID is rejected and the caller falls back to the template rationale with a warning in `run_manifest.json`.
 
-## AI 문안 생성
+### Tests
 
-`--llm-mode disabled`(템플릿) / `gemini` / `openai` 중 선택한다.
+3 test modules, 12 cases — all offline, no network:
 
-## MCP 도구
+- `tests/test_pipeline.py` — 6-pick invariant, evidence grounding, Gemini mock + missing-key fallback warning
+- `tests/test_cli.py` — PDF auto vs required runtime branch, live missing-secret error
+- `tests/test_live_pipeline.py` — live snapshot mock, cache warnings, timeout and insufficient-candidate failures
 
-```bash
-screener-mcp
-```
+Run: `pytest -q` (or `python -m pytest -q`).
 
-| 도구 | 반환 |
-|---|---|
-| `run_report` | PDF 리포트 경로와 manifest 경로 (PDF 우선) |
-| `run_data` | manifest, 추천 결과, evidence packet (구조화 데이터) |
-
-권장 사용: 사람/운영자는 CLI + `pdf_only`, 다른 에이전트는 MCP `run_report`, 데이터 파이프라인은 MCP `run_data`.
-
-## 설정 레퍼런스
-
-`.env.example`을 복사해 `.env`를 만들고 필요한 값을 채운다. 전부 선택 사항이며 `live`/LLM 모드에서만 필요하다.
-
-| 환경변수 | 설명 |
-|---|---|
-| `SCREENER_FMP_API_KEY` | live 종목/재무 데이터 |
-| `SCREENER_FRED_API_KEY` | 거시 데이터 |
-| `SCREENER_SEC_USER_AGENT` | SEC 직접 조회 식별 헤더 |
-| `SCREENER_SEC_API_KEY` | SEC 대체 filing freshness 소스 |
-| `SCREENER_GEMINI_API_KEY` | Gemini 문안 생성 |
-| `SCREENER_OPENAI_API_KEY` | OpenAI 문안 생성 |
-
-## Windows PDF 런타임
-
-Windows에서는 WeasyPrint 외에 GTK/Pango/FontConfig 런타임이 필요하다 (MSYS2 권장).
-런타임 DLL 경로를 직접 지정하려면 `SCREENER_PDF_WINDOWS_DLL_DIRECTORIES`에 넣는다
-(예: `C:\msys64\ucrt64\bin`).
-
-## 개발
+## Quick start
 
 ```bash
-python -m basedpyright   # 타입 체크
-pytest                   # 테스트
+python -m venv .venv
+.venv\Scripts\activate
+pip install -e .[dev]
+python -m screener.cli run --mode offline --input tests/fixtures/base_snapshot.json --output-dir out/demo
+pytest
 ```
 
-## Disclaimer
+## Modes
 
-모든 출력은 투자 판단 보조용 데이터이며 매매 권고가 아니다.
+- `offline`: consumes a prebuilt snapshot fixture or JSON file
+- `live`: builds a snapshot from FMP, SEC, and FRED before scoring
 
-## License
+## AI rationale modes
 
-[MIT](LICENSE) © 2026 AhnRyu
+- `--llm-mode disabled`: deterministic template text only
+- `--llm-mode openai`: uses `SCREENER_OPENAI_API_KEY`
+- `--llm-mode gemini`: uses `SCREENER_GEMINI_API_KEY`
+
+## Live mode environment
+
+Set these before running live mode:
+
+```bash
+set SCREENER_FMP_API_KEY=your_fmp_key
+set SCREENER_FRED_API_KEY=your_fred_key
+set SCREENER_SEC_USER_AGENT=YourApp your-email@example.com
+```
+
+Example live run:
+
+```bash
+python -m screener.cli run --mode live --output-dir out/live
+```
+
+Example Gemini rationale run:
+
+```bash
+set SCREENER_GEMINI_API_KEY=your_gemini_key
+python -m screener.cli run --mode offline --input tests/fixtures/base_snapshot.json --output-dir out/gemini --llm-mode gemini
+```
+
+## Windows PDF support
+
+The project uses WeasyPrint for PDF output. On Windows, WeasyPrint also needs GTK/Pango/FontConfig runtime libraries.
+
+Recommended setup:
+
+```bash
+winget install -e --id MSYS2.MSYS2 --accept-package-agreements --accept-source-agreements
+C:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm mingw-w64-ucrt-x86_64-pango mingw-w64-ucrt-x86_64-cairo mingw-w64-ucrt-x86_64-fontconfig"
+```
+
+Optional override if your DLLs live elsewhere:
+
+```bash
+set SCREENER_PDF_WINDOWS_DLL_DIRECTORIES=C:\msys64\ucrt64\bin
+```
