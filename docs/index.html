@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>signal-foundry — PDF-first stock screener and research packet generator — automate screening with MCP-ready data tools in measured market workloads.</title>
+<meta name="description" content="PDF-first stock screener and research packet generator — automate screening with MCP-ready data tools in measured market workloads.">
+<link rel="canonical" href="https://ianlyoo.github.io/signal-foundry/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="signal-foundry — PDF-first stock screener and research packet generator — automate screening with MCP-ready data tools in measured market workloads.">
+<meta property="og:description" content="PDF-first stock screener and research packet generator — automate screening with MCP-ready data tools in measured market workloads.">
+<meta property="og:url" content="https://ianlyoo.github.io/signal-foundry/">
+<meta property="og:image" content="https://ianlyoo.github.io/signal-foundry/assets/social-preview.png">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta property="og:image:type" content="image/png">
+<meta property="og:site_name" content="signal-foundry">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="signal-foundry — PDF-first stock screener and research packet generator — automate screening with MCP-ready data tools in measured market workloads.">
+<meta name="twitter:description" content="PDF-first stock screener and research packet generator — automate screening with MCP-ready data tools in measured market workloads.">
+<meta name="twitter:image" content="https://ianlyoo.github.io/signal-foundry/assets/social-preview.png">
+<meta name="twitter:url" content="https://ianlyoo.github.io/signal-foundry/">
+<meta name="author" content="ianlyoo">
+<meta name="robots" content="index, follow">
+<link rel="stylesheet" href="./styles.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"signal-foundry","description":"PDF-first stock screener and research packet generator — automate screening with MCP-ready data tools in measured market workloads.","version":"0.1.0","codeRepository":"https://github.com/ianlyoo/signal-foundry","url":"https://ianlyoo.github.io/signal-foundry/","programmingLanguage":"Python","license":"https://spdx.org/licenses/MIT","keywords":["evaluation","llm-judge","rag","retrieval","developer-tools","mcp","pdf","screening","stock-analysis","stock-screener","typescript","research-packet"],"author":{"@type":"Person","name":"ianlyoo"}}</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header role="banner">
+<div class="container">
+<h1>signal-foundry</h1>
+<p class="tagline">PDF-first stock screener and research packet generator — automate screening with MCP-ready data tools in measured market workloads.</p>
+<nav aria-label="Primary">
+<ul>
+<li><a href="https://github.com/ianlyoo/signal-foundry">GitHub Repository</a></li>
+<li><a href="https://github.com/ianlyoo/signal-foundry/blob/main/README.md">README</a></li>
+<li><a href="https://github.com/ianlyoo/signal-foundry/issues">Issues</a></li>
+<li><a href="https://ianlyoo.github.io/signal-foundry/">Pages</a></li>
+</ul>
+</nav>
+<nav aria-label="Language">
+<ul>
+<li><a href="https://github.com/ianlyoo/signal-foundry/blob/main/README.md" lang="en">English</a> | <a href="https://github.com/ianlyoo/signal-foundry/blob/main/README.md" lang="ko">한국어</a></li>
+</ul>
+</nav>
+</div>
+</header>
+<main id="main">
+<div class="container">
+<section aria-labelledby="overview-heading">
+<h2 id="overview-heading">Overview</h2>
+<p>PDF-first equity screener over tabular fundamentals — deterministic retrieval and reranking, evidence-grounded packet generation, and MCP-ready data tools. Scoring stays source of truth; LLM explains but never invents.</p>
+<ul>
+<li>Python 3.11, RAG-like tabular retrieval (no vector DB), deterministic overlay scoring</li>
+<li>Evidence packet: 5 typed <code>EvidenceItem</code>s per pick with <code>as_of</code> and <code>source</code></li>
+<li>Offline fixture <code>tests/fixtures/base_snapshot.json</code> — fully offline <code>pytest</code> and CLI</li>
+</ul>
+<p><a href="https://github.com/ianlyoo/signal-foundry/blob/main/README.md">README</a> — <a href="https://github.com/ianlyoo/signal-foundry/blob/main/README.en.md">English</a> — <a href="https://github.com/ianlyoo/signal-foundry/blob/main/CONTRIBUTING.md">Contributing</a></p>
+</section>
+<section aria-labelledby="install-heading">
+<h2 id="install-heading">Install</h2>
+<pre><code>git clone https://github.com/ianlyoo/signal-foundry.git
+cd signal-foundry
+python -m venv .venv
+# Windows: .venv\Scripts\activate
+pip install -e .[dev]
+pytest -q</code></pre>
+<pre><code>python -m screener.cli run --mode offline --input tests/fixtures/base_snapshot.json --output-dir out/demo</code></pre>
+</section>
+<section aria-labelledby="benchmark-heading">
+<h2 id="benchmark-heading">Evaluation — deterministic screening in measured snapshot</h2>
+<p>6-pick invariant (3 safer_growth + 3 higher_risk_higher_growth), 5 evidence items per pick, citation validation via <code>validate_grounding()</code>. LLM rationale is evidence-only with template fallback <code>source_mode</code>.</p>
+<div class="limitations" role="note" aria-label="Limitations">
+<p><strong>Limitations adjacent to claims:</strong> RAG-like tabular retrieval — no embedding index or ANN search; live snapshot requires FMP/SEC/FRED keys; scoring weights and macro overlay are deterministic heuristics, not financial advice; PDF output on Windows needs WeasyPrint GTK runtime.</p>
+</div>
+</section>
+<section aria-labelledby="pipeline-heading">
+<h2 id="pipeline-heading">Pipeline — retrieval → reranking → evidence → generation → validation</h2>
+<ul>
+<li><strong>Retrieval</strong> <code>pipeline.py:run_offline/run_live</code> — load <code>InputSnapshot</code> rows for as-of date</li>
+<li><strong>Reranking</strong> <code>scoring.py</code> — normalize valuation/growth/quality/risk + macro overlay → Top-6</li>
+<li><strong>Evidence</strong> <code>evidence.py:build_evidence()</code> — 5 items per pick (valuation/growth/quality/risk/macro)</li>
+<li><strong>Grounded generation</strong> <code>rationale.py:generate_rationale()</code> — evidence-only; citation subset check, template fallback</li>
+<li><strong>Reporting</strong> <code>reporting.py</code> — Markdown / HTML / PDF + <code>evidence_packets.json</code> + <code>run_manifest.json</code></li>
+</ul>
+</section>
+<section aria-labelledby="links-heading">
+<h2 id="links-heading">Project links</h2>
+<ul>
+<li><a href="https://github.com/ianlyoo/signal-foundry">Repository: https://github.com/ianlyoo/signal-foundry</a></li>
+<li><a href="https://github.com/ianlyoo/signal-foundry/issues">Issues</a></li>
+<li><a href="https://ianlyoo.github.io/signal-foundry/">Pages canonical: https://ianlyoo.github.io/signal-foundry/</a></li>
+<li><a href="https://github.com/ianlyoo/signal-foundry/blob/main/LICENSE">License: MIT</a></li>
+<li><a href="https://github.com/ianlyoo/signal-foundry/blob/main/README.md">README</a></li>
+</ul>
+</section>
+<section aria-labelledby="license-heading">
+<h2 id="license-heading">License and ownership</h2>
+<p>Owner: <a href="https://github.com/ianlyoo">ianlyoo</a> — License: <a href="https://spdx.org/licenses/MIT">MIT</a> — Version: 0.1.0 — Language: Python</p>
+</section>
+</div>
+</main>
+<footer role="contentinfo">
+<div class="container">
+<p>© 2026 ianlyoo — <a href="https://github.com/ianlyoo/signal-foundry">signal-foundry</a> — <a href="https://spdx.org/licenses/MIT">MIT</a> — <a href="https://ianlyoo.github.io/signal-foundry/sitemap.xml">Sitemap</a> — <a href="https://github.com/ianlyoo/signal-foundry/blob/main/README.md">README</a></p>
+</div>
+</footer>
+</body>
+</html>
