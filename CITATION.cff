@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "signal-foundry"
+version: 0.1.0
+license: MIT
+description: "PDF-first stock screener and research packet generator — automate screening with MCP-ready data tools in measured market workloads."
+keywords:
+  - developer-tools
+  - evaluation
+  - llm-judge
+  - mcp
+  - pdf
+  - rag
+  - research-packet
+  - retrieval
+  - screening
+  - stock-analysis
+  - stock-screener
+  - typescript
+authors:
+  - family-names: Lyoo
+    given-names: Ian
+    alias: ianlyoo
+repository-code: "https://github.com/ianlyoo/signal-foundry"
+url: "https://ianlyoo.github.io/signal-foundry/"
+homepage: "https://github.com/ianlyoo/signal-foundry"

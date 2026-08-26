@@ -1,0 +1,31 @@
+{
+  "name": "signal-foundry",
+  "version": "0.1.0",
+  "description": "PDF-first stock screener and research packet generator — automate screening with MCP-ready data tools in measured market workloads.",
+  "license": "MIT",
+  "homepage": "https://github.com/ianlyoo/signal-foundry",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ianlyoo/signal-foundry.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ianlyoo/signal-foundry/issues"
+  },
+  "keywords": [
+    "developer-tools",
+    "evaluation",
+    "llm-judge",
+    "mcp",
+    "pdf",
+    "rag",
+    "research-packet",
+    "retrieval",
+    "screening",
+    "stock-analysis",
+    "stock-screener",
+    "typescript"
+  ],
+  "author": "ianlyoo",
+  "type": "module",
+  "private": false
+}
