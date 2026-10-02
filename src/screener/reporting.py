@@ -8,7 +8,7 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from .models import RecommendationBatch
+from .models import InputSnapshot, RecommendationBatch
 
 
 def _candidate_windows_dll_dirs(config_value: str) -> list[Path]:
@@ -127,26 +127,36 @@ def render_markdown(batch: RecommendationBatch) -> str:
     return "\n".join(lines)
 
 
-def render_html(batch: RecommendationBatch, templates_dir: Path) -> str:
-    env = Environment(
+def _template_environment(templates_dir: Path) -> Environment:
+    return Environment(
         loader=FileSystemLoader(str(templates_dir)),
-        autoescape=select_autoescape(["html", "xml"]),
+        autoescape=select_autoescape(["html", "xml", "html.j2", "xml.j2"]),
     )
-    template = env.get_template("report.html.j2")
+
+
+def render_html(
+    batch: RecommendationBatch,
+    templates_dir: Path,
+    *,
+    snapshot: InputSnapshot | None = None,
+) -> str:
+    """Render report metrics from the input snapshot without changing batch JSON."""
+    metrics_by_symbol = {
+        item.symbol: {**item.model_dump(), "forward_pe": None}
+        for item in snapshot.securities
+    } if snapshot is not None else {}
+    template = _template_environment(templates_dir).get_template("report.html.j2")
     return template.render(
         title=f"주식 추천 리포트 ({batch.as_of})",
         batch=batch,
         disclaimer=DISCLAIMER,
         font_base_uri=templates_dir.resolve().as_uri(),
+        metrics_by_symbol=metrics_by_symbol,
     )
 
 
 def render_dashboard(batch: RecommendationBatch, templates_dir: Path) -> str:
-    env = Environment(
-        loader=FileSystemLoader(str(templates_dir)),
-        autoescape=select_autoescape(["html", "xml"]),
-    )
-    template = env.get_template("dashboard.html.j2")
+    template = _template_environment(templates_dir).get_template("dashboard.html.j2")
     return template.render(title=f"Screener Dashboard ({batch.as_of})", batch=batch)
 
 

@@ -1048,7 +1048,7 @@
   {% for recommendation in batch.recommendations %}
     {% set bucket_label = "안정 성장" if recommendation.bucket.value == "safer_growth" else "고위험 / 고성장" %}
     {% set bucket_class = "safe" if recommendation.bucket.value == "safer_growth" else "risk" %}
-    {% set metrics = recommendation.metrics %}
+    {% set metrics = metrics_by_symbol[recommendation.symbol] %}
     {% set show_forward_pe = metrics.forward_pe is not none %}
     {% set composite_pct = recommendation.composite_score * 100 %}
     {% set valuation_pct = recommendation.valuation_score * 100 %}
