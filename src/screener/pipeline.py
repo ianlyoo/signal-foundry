@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
 
@@ -21,13 +22,12 @@ from .rationale import PROMPT_VERSION, generate_rationale, validate_grounding
 from .reporting import (
     DISCLAIMER_ID,
     check_pdf_runtime,
-    render_html,
     render_dashboard,
+    render_html,
     render_markdown,
     write_pdf,
 )
 from .scoring import score_snapshot, select_top_six
-
 
 RANKING_VERSION = "v1"
 
@@ -126,7 +126,7 @@ def _run_from_snapshot(
     requested_llm_model = _requested_llm_model(settings)
     batch = RecommendationBatch(
         run_id=f"run-{uuid4().hex[:12]}",
-        generated_at=datetime.now(timezone.utc),
+        generated_at=datetime.now(UTC),
         as_of=snapshot.as_of,
         ranking_version=RANKING_VERSION,
         prompt_version=PROMPT_VERSION,
@@ -171,124 +171,21 @@ def write_artifacts(
     templates_dir = Path(__file__).parent / "templates"
     artifact_mode = settings.artifact_mode
 
-    markdown_path = output_dir / "report.md"
-    html_path = output_dir / "report.html"
-    dashboard_path = output_dir / "dashboard.html"
-    pdf_path = output_dir / "report.pdf"
-    snapshot_path = output_dir / "input_snapshot.json"
-    batch_path = output_dir / "recommendations.json"
-    evidence_path = output_dir / "evidence_packets.json"
-    manifest_path = output_dir / "run_manifest.json"
-
-    html_text: str | None = None
-    report_paths: list[str] = []
     artifacts: dict[str, str] = {}
-
+    html_text = ""
     if artifact_mode in {ArtifactMode.FULL, ArtifactMode.PDF_ONLY}:
-        html_text = render_html(batch, templates_dir)
-
+        html_text = render_html(batch, templates_dir, snapshot=snapshot)
     if artifact_mode == ArtifactMode.FULL:
-        markdown_text = render_markdown(batch)
-        dashboard_text = render_dashboard(batch, templates_dir)
-        _ = markdown_path.write_text(markdown_text, encoding="utf-8")
-        _ = html_path.write_text(html_text or "", encoding="utf-8")
-        _ = dashboard_path.write_text(dashboard_text, encoding="utf-8")
-        write_snapshot(snapshot_path, snapshot)
-        write_batch(batch_path, batch)
-        write_json(
-            evidence_path,
-            {
-                "run_id": batch.run_id,
-                "recommendations": [
-                    {
-                        "symbol": item.symbol,
-                        "evidence": [
-                            entry.model_dump(mode="json") for entry in item.evidence
-                        ],
-                    }
-                    for item in batch.recommendations
-                ],
-            },
-        )
-        report_paths.extend(
-            [
-                str(markdown_path),
-                str(html_path),
-                str(dashboard_path),
-                str(snapshot_path),
-                str(batch_path),
-                str(evidence_path),
-            ]
-        )
-        artifacts.update(
-            {
-                "report_markdown": str(markdown_path),
-                "report_html": str(html_path),
-                "dashboard_html": str(dashboard_path),
-                "input_snapshot": str(snapshot_path),
-                "recommendations": str(batch_path),
-                "evidence_packets": str(evidence_path),
-            }
-        )
-    elif artifact_mode == ArtifactMode.DATA_ONLY:
-        write_snapshot(snapshot_path, snapshot)
-        write_batch(batch_path, batch)
-        write_json(
-            evidence_path,
-            {
-                "run_id": batch.run_id,
-                "recommendations": [
-                    {
-                        "symbol": item.symbol,
-                        "evidence": [
-                            entry.model_dump(mode="json") for entry in item.evidence
-                        ],
-                    }
-                    for item in batch.recommendations
-                ],
-            },
-        )
-        report_paths.extend(
-            [
-                str(snapshot_path),
-                str(batch_path),
-                str(evidence_path),
-            ]
-        )
-        artifacts.update(
-            {
-                "input_snapshot": str(snapshot_path),
-                "recommendations": str(batch_path),
-                "evidence_packets": str(evidence_path),
-            }
-        )
+        artifacts.update(_write_report_artifacts(batch, html_text, templates_dir, output_dir))
+    if artifact_mode in {ArtifactMode.FULL, ArtifactMode.DATA_ONLY}:
+        artifacts.update(_write_data_artifacts(batch, snapshot, output_dir))
 
-    pdf_status = "disabled"
-    pdf_warnings = list(warnings)
-    deferred_error: str | None = None
-    if artifact_mode == ArtifactMode.PDF_ONLY and not settings.pdf_enabled:
-        deferred_error = "PDF-only artifact mode requires PDF generation to be enabled"
-        pdf_status = "disabled"
-    elif settings.pdf_enabled and artifact_mode != ArtifactMode.DATA_ONLY:
-        ready, runtime_message = check_pdf_runtime(settings.pdf_windows_dll_directories)
-        if not ready:
-            pdf_status = "skipped_runtime_unavailable"
-            pdf_warnings.append(runtime_message)
-            if settings.pdf_mode == PDFMode.REQUIRED:
-                deferred_error = runtime_message
-        else:
-            pdf_ok, pdf_message = write_pdf(html_text or "", pdf_path)
-            if pdf_ok:
-                pdf_status = "generated"
-                report_paths.append(str(pdf_path))
-                artifacts["report_pdf"] = str(pdf_path)
-            else:
-                pdf_status = "failed_generation"
-                pdf_warnings.append(pdf_message)
-                if settings.pdf_mode == PDFMode.REQUIRED:
-                    deferred_error = pdf_message
-    else:
-        pdf_status = "disabled"
+    pdf = _generate_pdf(html_text, output_dir / "report.pdf", settings)
+    if pdf.status == "generated":
+        artifacts["report_pdf"] = str(output_dir / "report.pdf")
+    manifest_warnings = list(warnings)
+    if pdf.warning is not None:
+        manifest_warnings.append(pdf.warning)
     manifest = RunManifest(
         run_id=batch.run_id,
         as_of=batch.as_of,
@@ -302,11 +199,87 @@ def write_artifacts(
         requested_llm_model=batch.requested_llm_model,
         rationale_sources=batch.rationale_sources,
         data_sources=data_sources,
-        warnings=pdf_warnings,
-        pdf_status=pdf_status,
+        warnings=manifest_warnings,
+        pdf_status=pdf.status,
         artifacts=artifacts,
-        report_paths=report_paths,
+        report_paths=list(artifacts.values()),
     )
-    write_manifest(manifest_path, manifest)
-    if deferred_error is not None:
-        raise RuntimeError(deferred_error)
+    write_manifest(output_dir / "run_manifest.json", manifest)
+    if pdf.error is not None:
+        raise RuntimeError(pdf.error)
+
+
+def _write_report_artifacts(
+    batch: RecommendationBatch,
+    html_text: str,
+    templates_dir: Path,
+    output_dir: Path,
+) -> dict[str, str]:
+    reports = (
+        ("report_markdown", "report.md", render_markdown(batch)),
+        ("report_html", "report.html", html_text),
+        ("dashboard_html", "dashboard.html", render_dashboard(batch, templates_dir)),
+    )
+    artifacts: dict[str, str] = {}
+    for name, filename, content in reports:
+        path = output_dir / filename
+        _ = path.write_text(content, encoding="utf-8")
+        artifacts[name] = str(path)
+    return artifacts
+
+
+def _write_data_artifacts(
+    batch: RecommendationBatch, snapshot: InputSnapshot, output_dir: Path
+) -> dict[str, str]:
+    snapshot_path = output_dir / "input_snapshot.json"
+    batch_path = output_dir / "recommendations.json"
+    evidence_path = output_dir / "evidence_packets.json"
+    write_snapshot(snapshot_path, snapshot)
+    write_batch(batch_path, batch)
+    write_json(
+        evidence_path,
+        {
+            "run_id": batch.run_id,
+            "recommendations": [
+                {
+                    "symbol": item.symbol,
+                    "evidence": [entry.model_dump(mode="json") for entry in item.evidence],
+                }
+                for item in batch.recommendations
+            ],
+        },
+    )
+    return {
+        "input_snapshot": str(snapshot_path),
+        "recommendations": str(batch_path),
+        "evidence_packets": str(evidence_path),
+    }
+
+
+@dataclass(frozen=True)
+class _PDFResult:
+    status: str
+    warning: str | None = None
+    error: str | None = None
+
+
+def _generate_pdf(html_text: str, pdf_path: Path, settings: Settings) -> _PDFResult:
+    """Report the outcome so the manifest can be written before a required failure."""
+    if settings.artifact_mode == ArtifactMode.PDF_ONLY and not settings.pdf_enabled:
+        return _PDFResult(
+            "disabled", error="PDF-only artifact mode requires PDF generation to be enabled"
+        )
+    if not settings.pdf_enabled or settings.artifact_mode == ArtifactMode.DATA_ONLY:
+        return _PDFResult("disabled")
+    ready, message = check_pdf_runtime(settings.pdf_windows_dll_directories)
+    if not ready:
+        status = "skipped_runtime_unavailable"
+    else:
+        generated, message = write_pdf(html_text, pdf_path)
+        if generated:
+            return _PDFResult("generated")
+        status = "failed_generation"
+    return _PDFResult(
+        status, warning=message,
+        error=message if settings.pdf_mode == PDFMode.REQUIRED else None,
+    )

@@ -11,6 +11,15 @@ from screener.providers.base import ProviderError
 from screener.providers.live_snapshot import build_live_snapshot
 
 
+@pytest.fixture(autouse=True)
+def fixture_provider_settings(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Provider methods below are mocked; never depend on a developer's credentials."""
+    monkeypatch.setenv("SCREENER_FMP_API_KEY", "fixture-only")
+    monkeypatch.setenv("SCREENER_FRED_API_KEY", "fixture-only")
+    monkeypatch.setenv("SCREENER_SEC_USER_AGENT", "fixture fixture@example.invalid")
+    monkeypatch.setenv("SCREENER_CACHE_ROOT", str(tmp_path / "cache"))
+
+
 def _fixture_securities() -> dict[str, SecuritySnapshot]:
     snapshot = load_snapshot(Path("tests/fixtures/base_snapshot.json"))
     return {security.symbol: security for security in snapshot.securities}
